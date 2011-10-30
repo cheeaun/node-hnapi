@@ -32,4 +32,4 @@ require('http').createServer(function (request, response) {
             response.end(result.body);
         });
     });
-}).listen(80);
+}).listen(process.env.PORT || 80);
