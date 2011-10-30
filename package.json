@@ -1,0 +1,8 @@
+{
+  "name": "node-hnapi",
+  "version": "0.0.1",
+  "dependencies": {
+    "journey": "0.4.0-pre-2",
+	"scraper": "0.0.9"
+  }
+}
