@@ -1,5 +1,6 @@
 var journey = require('journey'),
-	scraper = require('scraper');
+	scraper = require('scraper'),
+	gzip = require('gzip');
 
 // http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 var redis;
@@ -198,12 +199,20 @@ router.map(function () {
 
 require('http').createServer(function (request, response) {
 	var body = '';
-
-	request.addListener('data', function (chunk) { body += chunk });
-	request.addListener('end', function () {
-		router.handle(request, body, function (result) {
-			response.writeHead(result.status, result.headers);
-			response.end(result.body);
+	request.addListener('data', function (chunk){ body += chunk });
+	request.addListener('end', function (){
+		router.handle(request, body, function (result){
+			if (/gzip/i.test(request.headers['accept-encoding'])){
+				gzip(result.body, function(err, data){
+					result.headers['Content-Encoding'] = 'gzip';
+					result.headers['Content-Length'] = data.length;
+					response.writeHead(result.status, result.headers);
+					response.end(data);
+				});
+			} else {
+				response.writeHead(result.status, result.headers);
+				response.end(result.body);
+			}
 		});
 	});
 }).listen(process.env.PORT || 80);
