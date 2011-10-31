@@ -1,10 +1,17 @@
 var journey = require('journey'),
-	scraper = require('scraper'),
-	memcache = require('memcache');
+	scraper = require('scraper');
+
+// http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
+var redis;
+if (process.env.REDISTOGO_URL){
+	var rtg   = require("url").parse(process.env.REDISTOGO_URL);
+	redis = require("redis").createClient(rtg.port, rtg.hostname);
+	redis.auth(rtg.auth.split(":")[1]);
+} else {
+	redis = require("redis").createClient();
+}
 
 var router = new(journey.Router);
-var client = new memcache.Client();
-client.connect();
 
 var ROOT_URL = 'http://news.ycombinator.com/',
 	HEADERS = {"Content-type":"application/json;charset=utf-8"},
@@ -23,7 +30,7 @@ router.map(function () {
 	
     this.get('/news').bind(function (req, res, params){
 		var callback = params.callback;
-		client.get('news', function(err, result){
+		redis.get('news', function(err, result){
 			if (result){
 				if (callback){
 					res.send(200, HEADERS, callback + '(' + result + ')');
@@ -76,7 +83,8 @@ router.map(function () {
 					} else {
 						res.send(200, HEADERS, postsJSON);
 					}
-					client.set('news', postsJSON, function(){}, CACHE_EXP);
+					redis.set('news', postsJSON);
+					redis.expire('news', CACHE_EXP);
 				});
 			}
 		});
@@ -84,7 +92,7 @@ router.map(function () {
 	
 	this.get(/^post\/(\d+)$/).bind(function(req, res, postID, params){
 		var callback = params.callback;
-		client.get('post' + postID, function(err, result){
+		redis.get('post' + postID, function(err, result){
 			if (result){
 				if (callback){
 					res.send(200, HEADERS, callback + '(' + result + ')');
@@ -180,7 +188,8 @@ router.map(function () {
 					} else {
 						res.send(200, HEADERS, postJSON);
 					}
-					client.set('post' + postID, postJSON, function(){}, CACHE_EXP);
+					redis.set('post' + postID, postJSON);
+					redis.expire('post' + postID, CACHE_EXP);
 				});
 			}
 		});
