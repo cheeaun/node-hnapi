@@ -115,7 +115,7 @@ router.map(function () {
 						user = userLink.text(),
 						timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
 						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
-						questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty)');
+						questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
 						question = questionCell.length ? questionCell.html().replace(/<\/p>/ig, '') : '',
 						type = url.match(/^item/i) ? 'ask' : 'link',
 						post = {
@@ -188,8 +188,8 @@ router.map(function () {
 					} else {
 						res.send(200, HEADERS, postJSON);
 					}
-					redis.set('post' + postID, postJSON);
-					redis.expire('post' + postID, CACHE_EXP);
+//					redis.set('post' + postID, postJSON);
+//					redis.expire('post' + postID, CACHE_EXP);
 				});
 			}
 		});
