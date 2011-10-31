@@ -28,7 +28,7 @@ router.map(function () {
 		}, null, 4));
 	});
 	
-    this.get('/news').bind(function (req, res, params){
+	this.get('/news').bind(function (req, res, params){
 		var callback = params.callback;
 		redis.get('news', function(err, result){
 			if (result){
@@ -188,8 +188,8 @@ router.map(function () {
 					} else {
 						res.send(200, HEADERS, postJSON);
 					}
-//					redis.set('post' + postID, postJSON);
-//					redis.expire('post' + postID, CACHE_EXP);
+					redis.set('post' + postID, postJSON);
+					redis.expire('post' + postID, CACHE_EXP);
 				});
 			}
 		});
@@ -197,13 +197,13 @@ router.map(function () {
 });
 
 require('http').createServer(function (request, response) {
-    var body = "";
+	var body = "";
 
-    request.addListener('data', function (chunk) { body += chunk });
-    request.addListener('end', function () {
-        router.handle(request, body, function (result) {
-            response.writeHead(result.status, result.headers);
-            response.end(result.body);
-        });
-    });
+	request.addListener('data', function (chunk) { body += chunk });
+	request.addListener('end', function () {
+		router.handle(request, body, function (result) {
+			response.writeHead(result.status, result.headers);
+			response.end(result.body);
+		});
+	});
 }).listen(process.env.PORT || 80);
