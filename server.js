@@ -15,13 +15,12 @@ if (process.env.REDISTOGO_URL){
 var router = new(journey.Router);
 
 var ROOT_URL = 'http://news.ycombinator.com/',
-	HEADERS = {"Content-type":"application/json;charset=utf-8"},
 	CACHE_EXP = 60*5; // 5 mins
 
 // Create the routing table
 router.map(function () {
 	this.root.bind(function(req, res){
-		res.send(200, HEADERS, JSON.stringify({
+		res.sendBody(JSON.stringify({
 			title: 'Hacker News (unofficial) API, powered by Node.js',
 			version: '0.1',
 			author: 'cheeaun',
@@ -33,11 +32,8 @@ router.map(function () {
 		var callback = params.callback;
 		redis.get('news', function(err, result){
 			if (result){
-				if (callback){
-					res.send(200, HEADERS, callback + '(' + result + ')');
-				} else {
-					res.send(200, HEADERS, result);
-				}
+				if (callback) result = callback + '(' + result + ')';
+				res.sendBody(result);
 			} else {
 				scraper(ROOT_URL, function(err, $){
 					var posts = [],
@@ -79,11 +75,8 @@ router.map(function () {
 						});
 					}
 					var postsJSON = JSON.stringify(posts);
-					if (callback){
-						res.send(200, HEADERS, callback + '(' + postsJSON + ')');
-					} else {
-						res.send(200, HEADERS, postsJSON);
-					}
+					if (callback) postsJSON = callback + '(' + postsJSON + ')';
+					res.sendBody(postsJSON);
 					redis.set('news', postsJSON);
 					redis.expire('news', CACHE_EXP);
 				});
@@ -95,11 +88,8 @@ router.map(function () {
 		var callback = params.callback;
 		redis.get('post' + postID, function(err, result){
 			if (result){
-				if (callback){
-					res.send(200, HEADERS, callback + '(' + result + ')');
-				} else {
-					res.send(200, HEADERS, result);
-				}
+				if (callback) result = callback + '(' + result + ')';
+				res.sendBody(result);
 			} else {
 				scraper(ROOT_URL + 'item?id=' + postID, function(err, $){
 					var table1 = $('td table:has(textarea)'),
@@ -134,11 +124,12 @@ router.map(function () {
 						},
 						table2 = table1.nextAll('table:first');
 					
+					// If there are comments for a post
 					if (table2.length){
 						var commentRows = table2.find('tr table'),
-							comments = [],
-							commentIDs = [];
+							comments = [];
 						
+						// Create flat array of comments
 						for (var i=0, l=commentRows.length; i<l; i++){
 							var row = $(commentRows[i]),
 								comment = {},
@@ -164,7 +155,7 @@ router.map(function () {
 								comments: []
 							});
 						}
-						// comments is not nested yet, this 2nd loop will nest 'em up
+						// Comments are not nested yet, this 2nd loop will nest 'em up
 						for (var i=0, l=comments.length; i<l; i++){
 							var comment = comments[i],
 								level = comment.level;
@@ -176,7 +167,7 @@ router.map(function () {
 								parentComment.comments.push(comment);
 							}
 						}
-						// after that, remove the non-nested ones
+						// After that, remove the non-nested ones
 						comments = comments.filter(function(comment){
 							return (comment.level == 0);
 						});
@@ -184,11 +175,8 @@ router.map(function () {
 					}
 					
 					var postJSON = JSON.stringify(post);
-					if (callback){
-						res.send(200, HEADERS, callback + '(' + postJSON + ')');
-					} else {
-						res.send(200, HEADERS, postJSON);
-					}
+					if (callback) postJSON = callback + '(' + postJSON + ')';
+					res.sendBody(postJSON);
 					redis.set('post' + postID, postJSON);
 					redis.expire('post' + postID, CACHE_EXP);
 				});
@@ -202,15 +190,20 @@ require('http').createServer(function (request, response) {
 	request.addListener('data', function (chunk){ body += chunk });
 	request.addListener('end', function (){
 		router.handle(request, body, function (result){
+			var headers = result.headers;
+			headers['Access-Control-Allow-Origin'] = '*';
+			headers['Content-Type'] = 'application/json;charset=utf-8';
+			headers['Vary'] = 'Accept-Encoding';
+			headers['Cache-Control'] = 'public, max-age=' + CACHE_EXP;
 			if (/gzip/i.test(request.headers['accept-encoding'])){
 				gzip(result.body, function(err, data){
-					result.headers['Content-Encoding'] = 'gzip';
-					result.headers['Content-Length'] = data.length;
-					response.writeHead(result.status, result.headers);
+					headers['Content-Encoding'] = 'gzip';
+					headers['Content-Length'] = data.length;
+					response.writeHead(result.status, headers);
 					response.end(data);
 				});
 			} else {
-				response.writeHead(result.status, result.headers);
+				response.writeHead(result.status, headers);
 				response.end(result.body);
 			}
 		});
