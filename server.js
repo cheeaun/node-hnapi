@@ -56,11 +56,14 @@ router.map(function () {
 							timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
 							commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
 							type = 'link';
-						if (url.match(/^item/i)){ // URLs that points to itself = ask
-							type = 'ask';
-						} else if (!user){ // No users post this = job ads
-							type = 'job';
-							timeAgo = cell2.text().trim();
+						if (url.match(/^item/i)){
+							if (user){
+								type = 'ask';
+							} else { // No users post this = job ads
+								type = 'job';
+								id = (url.match(/\d+/) || [])[0];
+								timeAgo = cell2.text().trim();
+							}
 						}
 						posts.push({
 							id: id,
@@ -92,7 +95,7 @@ router.map(function () {
 				res.sendBody(result);
 			} else {
 				scraper(ROOT_URL + 'item?id=' + postID, function(err, $){
-					var table1 = $('td table:has(textarea)'),
+					var table1 = $('td table:has(td.title)'),
 						voteLink = table1.find('td a[id^=up]'),
 						id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
 						cell1 = table1.find('td.title:has(a)'),
@@ -108,8 +111,17 @@ router.map(function () {
 						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
 						questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
 						question = questionCell.length ? questionCell.html().replace(/<\/p>/ig, '') : '',
-						type = url.match(/^item/i) ? 'ask' : 'link',
-						post = {
+						type = 'link';
+					if (url.match(/^item/i)){
+						if (user){
+							type = 'ask';
+						} else { // No users post this = job ads
+							type = 'job';
+							id = (url.match(/\d+/) || [])[0];
+							timeAgo = cell2.text().trim();
+						}
+					}
+					var post = {
 							id: id,
 							title: title,
 							url: url,
