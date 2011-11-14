@@ -56,14 +56,11 @@ router.map(function () {
 							timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
 							commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
 							type = 'link';
-						if (url.match(/^item/i)){
-							if (user){
-								type = 'ask';
-							} else { // No users post this = job ads
-								type = 'job';
-								id = (url.match(/\d+/) || [])[0];
-								timeAgo = cell2.text().trim();
-							}
+						if (url.match(/^item/i)) type = 'ask';
+						if (!user){ // No users post this = job ads
+							type = 'job';
+							id = (url.match(/\d+/) || [])[0];
+							timeAgo = cell2.text().trim();
 						}
 						posts.push({
 							id: id,
@@ -112,14 +109,11 @@ router.map(function () {
 						questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
 						question = questionCell.length ? questionCell.html().replace(/<\/p>/ig, '') : '',
 						type = 'link';
-					if (url.match(/^item/i)){
-						if (user){
-							type = 'ask';
-						} else { // No users post this = job ads
-							type = 'job';
-							id = (url.match(/\d+/) || [])[0];
-							timeAgo = cell2.text().trim();
-						}
+					if (url.match(/^item/i)) type = 'ask';
+					if (!user){ // No users post this = job ads
+						type = 'job';
+						id = (url.match(/\d+/) || [])[0];
+						timeAgo = cell2.text().trim();
 					}
 					var post = {
 							id: id,
