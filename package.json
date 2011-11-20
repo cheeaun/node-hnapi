@@ -4,7 +4,7 @@
 	"dependencies": {
 		"journey": "0.4.0-pre-2",
 		"scraper": "0.0.9",
-		"redis": "0.6.7",
+		"redis": "0.7.1",
 		"gzip": "0.1.0"
 	}
 }
