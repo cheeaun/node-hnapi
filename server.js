@@ -30,6 +30,8 @@ router.map(function () {
 		res.sendBody(JSON.stringify({
 			title: 'Hacker News (unofficial) API, powered by Node.js',
 			version: '0.1',
+			project_url: 'https://github.com/cheeaun/node-hnapi/',
+			documentation_url: 'https://github.com/cheeaun/node-hnapi/wiki/API-Documentation',
 			author: 'cheeaun',
 			author_url: 'http://cheeaun.com/'
 		}, null, 4));
