@@ -17,6 +17,13 @@ var router = new(journey.Router);
 var ROOT_URL = 'http://news.ycombinator.com/',
 	CACHE_EXP = 60*5; // 5 mins
 
+var cleanContent = function(html){
+	// yea yea regex to clean HTML is lame yada yada
+	html = html.replace(/<\/?font[^<>]*>/ig, ''); // remove font tags
+	html = html.replace(/<\/p>/ig, ''); // remove trailing </p>s
+	return '<p>' + html; // HN forgot the first <p>
+};
+
 // Create the routing table
 router.map(function () {
 	this.root.bind(function(req, res){
@@ -84,7 +91,7 @@ router.map(function () {
 		});
 	});
 	
-	this.get(/^post\/(\d+)$/).bind(function(req, res, postID, params){
+	this.get(/^item\/(\d+)$/).bind(function(req, res, postID, params){
 		var callback = params.callback;
 		redis.get('post' + postID, function(err, result){
 			if (result){
@@ -92,28 +99,41 @@ router.map(function () {
 				res.sendBody(result);
 			} else {
 				scraper(ROOT_URL + 'item?id=' + postID, function(err, $){
-					var table1 = $('td table:has(td.title)'),
+					var table1 = $('td table:has(td.title,textarea)'),
 						voteLink = table1.find('td a[id^=up]'),
 						id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
 						cell1 = table1.find('td.title:has(a)'),
-						link = cell1.find('a'),
-						title = link.text().trim(),
-						url = link.attr('href'),
-						domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,''])[1],
-						cell2 = table1.find('td.subtext'),
-						points = parseInt(cell2.find('span[id^=score]').text(), 10),
-						userLink = cell2.find('a[href^=user]'),
-						user = userLink.text(),
-						timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
-						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
-						questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
-						question = questionCell.length ? questionCell.html().replace(/<\/p>/ig, '') : '',
+						link, title, url, domain, points, user, timeAgo, commentsCount, content,
 						type = 'link';
-					if (url.match(/^item/i)) type = 'ask';
-					if (!user){ // No users post this = job ads
-						type = 'job';
-						id = (url.match(/\d+/) || [])[0];
-						timeAgo = cell2.text().trim();
+					if (cell1.length){
+						link = cell1.find('a');
+						title = link.text().trim();
+						url = link.attr('href');
+						domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,''])[1];
+						var cell2 = table1.find('td.subtext');
+						points = parseInt(cell2.find('span[id^=score]').text(), 10);
+						var userLink = cell2.find('a[href^=user]');
+						user = userLink.text();
+						timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
+						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
+						var questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
+						content = questionCell.length ? cleanContent(questionCell.html()) : '';
+						if (url.match(/^item/i)) type = 'ask';
+						if (!user){ // No users post this = job ads
+							type = 'job';
+							id = (url.match(/\d+/) || [])[0];
+							timeAgo = cell2.text().trim();
+						}
+					} else {
+						var cell = table1.find('td.default');
+						if (cell.length){
+							var userLink = cell.find('a[href^=user]');
+							user = userLink.text(),
+							timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
+							id = (cell.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
+							content = cleanContent(table1.find('.comment').html());
+							type = 'comment';
+						}
 					}
 					var post = {
 							id: id,
@@ -124,7 +144,7 @@ router.map(function () {
 							user: user,
 							time_ago: timeAgo,
 							comments_count: commentsCount,
-							question: question,
+							content: content,
 							type: type,
 							comments: []
 						},
@@ -150,7 +170,7 @@ router.map(function () {
 								user = userLink.text(),
 								timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
 								id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
-								content = row.find('.comment font').html().replace(/<\/p>/ig, '');
+								content = cleanContent(row.find('.comment').html());
 							}
 							comments.push({
 								id: id,
