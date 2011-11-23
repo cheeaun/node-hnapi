@@ -35,14 +35,14 @@ router.map(function () {
 		}, null, 4));
 	});
 	
-	this.get('/news').bind(function (req, res, params){
+	this.get(/^(news|news2|newest|ask|best|active|noobstories)$/).bind(function (req, res, path, params){
 		var callback = params.callback;
-		redis.get('news', function(err, result){
+		redis.get(path, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				scraper(ROOT_URL, function(err, $){
+				scraper(ROOT_URL + (path!='news' ? path : ''), function(err, $){
 					var posts = [],
 						rows = $('td table:has(td.title) tr:has(td)');
 					for (var i=0, l=rows.length; i<l; i+=2){
@@ -84,8 +84,8 @@ router.map(function () {
 					var postsJSON = JSON.stringify(posts);
 					if (callback) postsJSON = callback + '(' + postsJSON + ')';
 					res.sendBody(postsJSON);
-					redis.set('news', postsJSON);
-					redis.expire('news', CACHE_EXP);
+					redis.set(path, postsJSON);
+					redis.expire(path, CACHE_EXP);
 				});
 			}
 		});
