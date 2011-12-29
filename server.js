@@ -57,7 +57,7 @@ router.map(function () {
 							link = cell1.find('a'),
 							title = link.text().trim(),
 							url = link.attr('href'),
-							domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,''])[1],
+							domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,null])[1],
 							cell2 = row2.find('td.subtext'),
 							points = parseInt(cell2.find('span[id^=score]').text(), 10),
 							userLink = cell2.find('a[href^=user]'),
@@ -111,7 +111,7 @@ router.map(function () {
 						link = cell1.find('a');
 						title = link.text().trim();
 						url = link.attr('href');
-						domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,''])[1];
+						domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,null])[1];
 						var cell2 = table1.find('td.subtext');
 						points = parseInt(cell2.find('span[id^=score]').text(), 10);
 						var userLink = cell2.find('a[href^=user]');
@@ -119,7 +119,7 @@ router.map(function () {
 						timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
 						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
 						var questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
-						content = questionCell.length ? cleanContent(questionCell.html()) : '';
+						content = questionCell.length ? cleanContent(questionCell.html()) : null;
 						if (url.match(/^item/i)) type = 'ask';
 						if (!user){ // No users post this = job ads
 							type = 'job';
@@ -163,7 +163,7 @@ router.map(function () {
 								comment = {},
 								level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
 								metadata = row.find('.comhead:has(a)'),
-								user = '',
+								user = null,
 								timeAgo = '',
 								id = '',
 								content = '[deleted]';
