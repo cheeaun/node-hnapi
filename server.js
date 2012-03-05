@@ -84,10 +84,10 @@ router.map(function () {
 						});
 					}
 					var postsJSON = JSON.stringify(posts);
-					if (callback) postsJSON = callback + '(' + postsJSON + ')';
-					res.sendBody(postsJSON);
 					redis.set(path, postsJSON);
 					redis.expire(path, CACHE_EXP);
+					if (callback) postsJSON = callback + '(' + postsJSON + ')';
+					res.sendBody(postsJSON);
 				});
 			}
 		});
@@ -203,10 +203,10 @@ router.map(function () {
 					}
 					
 					var postJSON = JSON.stringify(post);
-					if (callback) postJSON = callback + '(' + postJSON + ')';
-					res.sendBody(postJSON);
 					redis.set('post' + postID, postJSON);
 					redis.expire('post' + postID, CACHE_EXP);
+					if (callback) postJSON = callback + '(' + postJSON + ')';
+					res.sendBody(postJSON);
 				});
 			}
 		});
