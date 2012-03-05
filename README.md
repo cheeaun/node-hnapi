@@ -26,6 +26,6 @@ Licensed under the [MIT License](http://cheeaun.mit-license.org/).
 Other APIs
 ----------
 
-- [http://api.hackernews.com/]()
+- [http://api.ihackernews.com/]()
 - [http://hndroidapi.appspot.com/]()
 - [http://www.hnsearch.com/api]()
