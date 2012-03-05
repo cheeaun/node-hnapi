@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"dependencies": {
 		"journey": "0.4.0-pre-2",
-		"scraper": "0.0.9",
+		"scraper": "git://github.com/pirxpilot/node-scraper.git",
 		"redis": "0.7.1",
 		"gzip": "0.1.0"
 	}
