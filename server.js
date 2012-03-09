@@ -127,7 +127,7 @@ router.map(function () {
 					html: ROOT_URL + 'item?id=' + postID,
 					src: [jquery],
 					done: function(err, window){
-						if (!err){
+						if (err){
 							var errorJSON = JSON.stringify({
 								error: err
 							});
