@@ -8,7 +8,6 @@
 	"dependencies": {
 		"journey": "0.4.0-pre-3",
 		"jsdom": "0.2.13",
-		"redis": "0.7.1",
-		"gzip": "0.1.0"
+		"redis": "0.7.1"
 	}
 }
