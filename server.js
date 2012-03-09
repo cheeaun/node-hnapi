@@ -50,19 +50,7 @@ router.map(function () {
 					html: ROOT_URL + (path!='news' ? path : ''),
 					src: [jquery],
 					done: function(err, window){
-						if (err){
-							var errorJSON = JSON.stringify({
-								error: err
-							});
-							if (callback) errorJSON = callback + '(' + errorJSON + ')';
-							res.respond({
-								status: 500,
-								body: errorJSON,
-								headers: res.baseResponse.headers
-							});
-							console.error(err);
-							return;
-						}
+						if (err) throw err;
 						var $ = window.$;
 						var posts = [],
 							rows = $('td table:has(td.title) tr:has(td)');
@@ -127,19 +115,7 @@ router.map(function () {
 					html: ROOT_URL + 'item?id=' + postID,
 					src: [jquery],
 					done: function(err, window){
-						if (err){
-							var errorJSON = JSON.stringify({
-								error: err
-							});
-							if (callback) errorJSON = callback + '(' + errorJSON + ')';
-							res.respond({
-								status: 500,
-								body: errorJSON,
-								headers: res.baseResponse.headers
-							});
-							console.error(err);
-							return;
-						}
+						if (err) throw err;
 						var $ = window.$;
 						var table1 = $('td table:has(td.title,textarea)'),
 							voteLink = table1.find('td a[id^=up]'),
@@ -278,4 +254,4 @@ require('http').createServer(function (request, response) {
 			}
 		});
 	});
-}).listen(process.env.PORT || 80);
+}).listen(process.env.PORT || 3000);
