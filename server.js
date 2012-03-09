@@ -2,7 +2,7 @@ var journey = require('journey'),
 	jsdom = require('jsdom'),
 	fs = require('fs'),
 	jquery = fs.readFileSync("./jquery.min.js").toString(),
-	gzip = require('gzip');
+	zlib = require('zlib');
 
 // http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 var redis;
@@ -266,7 +266,7 @@ require('http').createServer(function (request, response) {
 			headers['Vary'] = 'Accept-Encoding';
 			headers['Cache-Control'] = 'public, max-age=' + CACHE_EXP;
 			if (/gzip/i.test(request.headers['accept-encoding'])){
-				gzip(result.body, function(err, data){
+				zlib.gzip(result.body, function(err, data){
 					headers['Content-Encoding'] = 'gzip';
 					headers['Content-Length'] = data.length;
 					response.writeHead(result.status, headers);
