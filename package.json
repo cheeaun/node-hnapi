@@ -1,9 +1,13 @@
 {
 	"name": "node-hnapi",
-	"version": "0.1.0",
+	"version": "0.1.1",
+	"engines": {
+		"node": "0.6.x",
+		"npm": "1.1.x"
+	}
 	"dependencies": {
-		"journey": "0.4.0-pre-2",
-		"scraper": "git://github.com/pirxpilot/node-scraper.git",
+		"journey": "0.4.0-pre-3",
+		"jsdom": "0.2.13",
 		"redis": "0.7.1",
 		"gzip": "0.1.0"
 	}
