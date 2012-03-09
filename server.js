@@ -60,9 +60,9 @@ router.map(function () {
 								body: errorJSON,
 								headers: res.baseResponse.headers
 							});
+							console.error(err);
 							return;
 						}
-						console.error(err);
 						var $ = window.$;
 						var posts = [],
 							rows = $('td table:has(td.title) tr:has(td)');
