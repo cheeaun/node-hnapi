@@ -14,9 +14,9 @@ Quick Start
 3. [Download, install and start redis](http://redis.io/download).
 4. `npm install`
 5. `node server.js`
-6. Load `localhost` in your web browser.
+6. Load `localhost:3000` in your web browser.
 
-**Note**: It listens to port 80. Change at will.
+**Note**: It listens to port 3000. Change at will.
 
 License
 -------
