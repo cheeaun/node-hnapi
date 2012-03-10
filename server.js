@@ -26,6 +26,19 @@ var cleanContent = function(html){
 	return '<p>' + html; // HN forgot the first <p>
 };
 
+var errorRespond = function(response, error, callback){
+	var errorJSON = JSON.stringify({
+		error: error
+	});
+	if (callback) errorJSON = callback + '(' + errorJSON + ')';
+	response.respond({
+		status: 500,
+		body: errorJSON,
+		headers: response.baseResponse.headers
+	});
+	console.error(error);
+};
+
 // Create the routing table
 router.map(function () {
 	this.root.bind(function(req, res){
@@ -51,16 +64,7 @@ router.map(function () {
 					src: [jquery],
 					done: function(err, window){
 						if (err){
-							var errorJSON = JSON.stringify({
-								error: err
-							});
-							if (callback) errorJSON = callback + '(' + errorJSON + ')';
-							res.respond({
-								status: 500,
-								body: errorJSON,
-								headers: res.baseResponse.headers
-							});
-							console.error(err);
+							errorRespond(res, err, callback);
 							return;
 						}
 						var $ = window.$;
@@ -128,16 +132,7 @@ router.map(function () {
 					src: [jquery],
 					done: function(err, window){
 						if (err){
-							var errorJSON = JSON.stringify({
-								error: err
-							});
-							if (callback) errorJSON = callback + '(' + errorJSON + ')';
-							res.respond({
-								status: 500,
-								body: errorJSON,
-								headers: res.baseResponse.headers
-							});
-							console.error(err);
+							errorRespond(res, err, callback);
 							return;
 						}
 						var $ = window.$;
@@ -191,64 +186,97 @@ router.map(function () {
 								comments: []
 							},
 							table2 = table1.nextAll('table:first');
+
+						var done = function(window){
+							var postJSON = JSON.stringify(post);
+							redis.set('post' + postID, postJSON);
+							redis.expire('post' + postID, CACHE_EXP);
+							if (callback) postJSON = callback + '(' + postJSON + ')';
+							res.sendBody(postJSON);
+
+							window.close();
+						};
 						
 						// If there are comments for a post
 						if (table2.length){
-							var commentRows = table2.find('tr table'),
-								comments = [];
-							
-							// Create flat array of comments
-							for (var i=0, l=commentRows.length; i<l; i++){
-								var row = $(commentRows[i]),
-									comment = {},
-									level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
-									metadata = row.find('.comhead:has(a)'),
-									user = null,
-									timeAgo = '',
-									id = '',
-									content = '[deleted]';
-								if (metadata.length){
-									var userLink = metadata.find('a[href^=user]');
-									user = userLink.text(),
-									timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
-									id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
-									content = cleanContent(row.find('.comment').html());
-								}
-								comments.push({
-									id: id,
-									level: level,
-									user: user,
-									time_ago: timeAgo,
-									content: content,
-									comments: []
-								});
-							}
-							// Comments are not nested yet, this 2nd loop will nest 'em up
-							for (var i=0, l=comments.length; i<l; i++){
-								var comment = comments[i],
-									level = comment.level;
-								if (level > 0){
-									var index = i, parentComment;
-									do {
-										parentComment = comments[--index];
-									} while (parentComment.level >= level);
-									parentComment.comments.push(comment);
-								}
-							}
-							// After that, remove the non-nested ones
-							comments = comments.filter(function(comment){
-								return (comment.level == 0);
-							});
-							post.comments = comments
-						}
-						
-						var postJSON = JSON.stringify(post);
-						redis.set('post' + postID, postJSON);
-						redis.expire('post' + postID, CACHE_EXP);
-						if (callback) postJSON = callback + '(' + postJSON + ')';
-						res.sendBody(postJSON);
+							var commentRows = table2.find('tr table');
+							var processComments = function(rows){
+								var comments = [];
 
-						window.close();
+								// Create flat array of comments
+								for (var i=0, l=rows.length; i<l; i++){
+									var row = $(rows[i]),
+										comment = {},
+										level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
+										metadata = row.find('.comhead:has(a)'),
+										user = null,
+										timeAgo = '',
+										id = '',
+										content = '[deleted]';
+									if (metadata.length){
+										var userLink = metadata.find('a[href^=user]');
+										user = userLink.text(),
+										timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
+										id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
+										content = cleanContent(row.find('.comment').html());
+									}
+									comments.push({
+										id: id,
+										level: level,
+										user: user,
+										time_ago: timeAgo,
+										content: content,
+										comments: []
+									});
+								}
+								// Comments are not nested yet, this 2nd loop will nest 'em up
+								for (var i=0, l=comments.length; i<l; i++){
+									var comment = comments[i],
+										level = comment.level;
+									if (level > 0){
+										var index = i, parentComment;
+										do {
+											parentComment = comments[--index];
+										} while (parentComment.level >= level);
+										parentComment.comments.push(comment);
+									}
+								}
+								// After that, remove the non-nested ones
+								comments = comments.filter(function(comment){
+									return (comment.level == 0);
+								});
+								return comments;
+							};
+							
+							post.comments = processComments(commentRows);
+
+							// Check for 'More' comments (Rare case)
+							// Yet another request here, getting the 2nd page of the comments
+							// Not sure if there's a 3rd page, but who cares?
+							var more = $('td.title a[href^="/x?"]');
+							if (more.length){
+								var url = ROOT_URL + more.attr('href').replace(/^\//, '');
+								jsdom.env({
+									html: url,
+									src: [jquery],
+									done: function(err, window1){
+										if (err){
+											errorRespond(res, err, callback);
+											return;
+										}
+										var $ = window1.$;
+										var commentRows = $('table:not(:has(table)):has(a[id^=up])');
+										post.comments = post.comments.concat(processComments(commentRows));
+										done(window1);
+									}
+								});
+								window.close();
+							} else {
+								done(window);
+							}
+						} else {
+							done(window);
+						}
 					}
 				});
 			}
