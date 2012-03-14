@@ -84,7 +84,7 @@ router.map(function () {
 								cell2 = row2.find('td.subtext'),
 								points = parseInt(cell2.find('span[id^=score]').text(), 10),
 								userLink = cell2.find('a[href^=user]'),
-								user = userLink.text(),
+								user = userLink.text() || null,
 								timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
 								commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0,
 								type = 'link';
@@ -150,7 +150,7 @@ router.map(function () {
 							var cell2 = table1.find('td.subtext');
 							points = parseInt(cell2.find('span[id^=score]').text(), 10);
 							var userLink = cell2.find('a[href^=user]');
-							user = userLink.text();
+							user = userLink.text() || null;
 							timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
 							commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
 							var questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
