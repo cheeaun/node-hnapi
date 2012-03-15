@@ -141,6 +141,7 @@ router.map(function () {
 							id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
 							cell1 = table1.find('td.title:has(a)'),
 							link, title, url, domain, points, user, timeAgo, commentsCount, content,
+							poll = null,
 							type = 'link';
 						if (cell1.length){
 							link = cell1.find('a');
@@ -155,6 +156,17 @@ router.map(function () {
 							commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
 							var questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
 							content = questionCell.length ? cleanContent(questionCell.html()) : null;
+							var pollCell = questionCell.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+							if (pollCell.length){
+								poll = [];
+								pollCell.find('td.comment').each(function(){
+									var el = $(this);
+									poll.push({
+										item: el.text().trim(),
+										points: parseInt(el.parent('tr').next('tr').find('.comhead span').text(), 10)
+									});
+								});
+							}
 							if (url.match(/^item/i)) type = 'ask';
 							if (!user){ // No users post this = job ads
 								type = 'job';
@@ -182,6 +194,7 @@ router.map(function () {
 								time_ago: timeAgo,
 								comments_count: commentsCount,
 								content: content,
+								poll: poll,
 								type: type,
 								comments: []
 							},
