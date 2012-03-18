@@ -269,6 +269,7 @@ router.map(function () {
 							var more = $('td.title a[href^="/x?"]');
 							if (more.length){
 								var url = ROOT_URL + more.attr('href').replace(/^\//, '');
+								window.close();
 								jsdom.env({
 									html: url,
 									src: [jquery],
@@ -283,7 +284,6 @@ router.map(function () {
 										done(window1);
 									}
 								});
-								window.close();
 							} else {
 								done(window);
 							}
