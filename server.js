@@ -280,10 +280,12 @@ router.map(function () {
 								};
 								
 								post.comments = processComments(commentRows);
+								done(window);
 
 								// Check for 'More' comments (Rare case)
 								// Yet another request here, getting the 2nd page of the comments
 								// Not sure if there's a 3rd page, but who cares?
+								/*
 								var more = $('td.title a[href^="/x?"]');
 								if (more.length){
 									var url = ROOT_URL + more.attr('href').replace(/^\//, '');
@@ -314,6 +316,7 @@ router.map(function () {
 								} else {
 									done(window);
 								}
+								*/
 							} else {
 								done(window);
 							}
