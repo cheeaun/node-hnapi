@@ -162,7 +162,7 @@ router.map(function () {
 								poll = null,
 								type = 'link';
 							if (cell1.length){
-								link = cell1.find('a');
+								link = cell1.find('a').first();
 								title = link.text().trim();
 								url = link.attr('href');
 								domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,null])[1];
