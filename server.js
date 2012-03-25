@@ -41,7 +41,7 @@ var errorRespond = function(response, error, callback){
 };
 
 // Create the routing table
-router.map(function () {
+router.map(function(){
 	this.root.bind(function(req, res){
 		res.sendBody(JSON.stringify({
 			title: 'Hacker News (unofficial) API, powered by Node.js',
@@ -130,6 +130,54 @@ router.map(function () {
 		});
 	});
 	
+	var processComments = function(rows, $){
+		var comments = [];
+
+		// Create flat array of comments
+		for (var i=0, l=rows.length; i<l; i++){
+			var row = $(rows[i]),
+				comment = {},
+				level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
+				metadata = row.find('.comhead:has(a)'),
+				user = null,
+				timeAgo = '',
+				id = '',
+				content = '[deleted]';
+			if (metadata.length){
+				var userLink = metadata.find('a[href^=user]');
+				user = userLink.text(),
+				timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
+				id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
+				content = cleanContent(row.find('.comment').html());
+			}
+			comments.push({
+				id: id,
+				level: level,
+				user: user,
+				time_ago: timeAgo,
+				content: content,
+				comments: []
+			});
+		}
+		// Comments are not nested yet, this 2nd loop will nest 'em up
+		for (var i=0, l=comments.length; i<l; i++){
+			var comment = comments[i],
+				level = comment.level;
+			if (level > 0){
+				var index = i, parentComment;
+				do {
+					parentComment = comments[--index];
+				} while (parentComment.level >= level);
+				parentComment.comments.push(comment);
+			}
+		}
+		// After that, remove the non-nested ones
+		comments = comments.filter(function(comment){
+			return (comment.level == 0);
+		});
+		return comments;
+	};
+	
 	this.get(/^item\/(\d+)$/).bind(function(req, res, postID, params){
 		var callback = params.callback;
 		redis.get('post' + postID, function(err, result){
@@ -214,112 +262,104 @@ router.map(function () {
 									content: content,
 									poll: poll,
 									type: type,
-									comments: []
+									comments: [],
+									more_comments_id: null
 								},
 								table2 = table1.nextAll('table:first');
-
-							var done = function(window){
-								var postJSON = JSON.stringify(post);
-								redis.set('post' + postID, postJSON);
-								redis.expire('post' + postID, CACHE_EXP);
-								if (callback) postJSON = callback + '(' + postJSON + ')';
-								res.sendBody(postJSON);
-
-								window.close();
-							};
 							
 							// If there are comments for a post
 							if (table2.length){
 								var commentRows = table2.find('tr table');
-								var processComments = function(rows){
-									var comments = [];
-
-									// Create flat array of comments
-									for (var i=0, l=rows.length; i<l; i++){
-										var row = $(rows[i]),
-											comment = {},
-											level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
-											metadata = row.find('.comhead:has(a)'),
-											user = null,
-											timeAgo = '',
-											id = '',
-											content = '[deleted]';
-										if (metadata.length){
-											var userLink = metadata.find('a[href^=user]');
-											user = userLink.text(),
-											timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '',
-											id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0],
-											content = cleanContent(row.find('.comment').html());
-										}
-										comments.push({
-											id: id,
-											level: level,
-											user: user,
-											time_ago: timeAgo,
-											content: content,
-											comments: []
-										});
-									}
-									// Comments are not nested yet, this 2nd loop will nest 'em up
-									for (var i=0, l=comments.length; i<l; i++){
-										var comment = comments[i],
-											level = comment.level;
-										if (level > 0){
-											var index = i, parentComment;
-											do {
-												parentComment = comments[--index];
-											} while (parentComment.level >= level);
-											parentComment.comments.push(comment);
-										}
-									}
-									// After that, remove the non-nested ones
-									comments = comments.filter(function(comment){
-										return (comment.level == 0);
-									});
-									return comments;
-								};
-								
-								post.comments = processComments(commentRows);
-								done(window);
+								post.comments = processComments(commentRows, $);
 
 								// Check for 'More' comments (Rare case)
-								// Yet another request here, getting the 2nd page of the comments
-								// Not sure if there's a 3rd page, but who cares?
-								/*
 								var more = $('td.title a[href^="/x?"]');
 								if (more.length){
-									var url = ROOT_URL + more.attr('href').replace(/^\//, '');
-									window.close();
-									request({
-										url: url,
-										forever: true
-									}, function(e, r, body){
-										if (e || r.statusCode != 200){
-											errorRespond(res, e, callback);
-											return;
-										}
-										jsdom.env({
-											html: body,
-											src: [jquery],
-											done: function(err, window1){
-												if (err){
-													errorRespond(res, err, callback);
-													return;
-												}
-												var $ = window1.$;
-												var commentRows = $('table:not(:has(table)):has(a[id^=up])');
-												post.comments = post.comments.concat(processComments(commentRows));
-												done(window1);
-											}
-										});
-									});
-								} else {
-									done(window);
+									// Whatever 'fnid' means
+									var fnid = more.attr('href').match(/fnid=(\w+)/);
+									if (fnid){
+										fnid = fnid[1];
+										post.more_comments_id = fnid;
+									}
 								}
-								*/
-							} else {
-								done(window);
 							}
+
+							var postJSON = JSON.stringify(post);
+							redis.set('post' + postID, postJSON);
+							redis.expire('post' + postID, CACHE_EXP);
+							if (callback) postJSON = callback + '(' + postJSON + ')';
+							res.sendBody(postJSON);
+
+							window.close();
+						}
+					});
+				});
+			}
+		});
+	});
+
+	// 'More' comments, experimental API.
+	this.get(/^comments\/(\w+)$/).bind(function(req, res, commentID, params){
+		var callback = params.callback;
+		redis.get('comments' + commentID, function(err, result){
+			if (result){
+				if (callback) result = callback + '(' + result + ')';
+				res.sendBody(result);
+			} else {
+				request({
+					url: ROOT_URL + 'x?fnid=' + commentID,
+					forever: true
+				}, function(e, r, body){
+					if (e || r.statusCode != 200){
+						errorRespond(res, e, callback);
+						return;
+					}
+					// Link has expired. Classic HN error message.
+					if (!/[<>]/.test(body) && /expired/i.test(body)){
+						var result = JSON.stringify({
+							error: true,
+							message: body
+						});
+						if (callback) result = callback + '(' + result + ')';
+						res.sendBody(result);
+						return;
+					}
+					jsdom.env({
+						html: body,
+						src: [jquery],
+						done: function(err, window){
+							if (err){
+								errorRespond(res, err, callback);
+								return;
+							}
+							var $ = window.$;
+
+							var post = {
+									comments: [],
+									more_comments_id: null
+								};
+
+							var commentRows = $('table:not(:has(table)):has(a[id^=up])');
+							post.comments = processComments(commentRows, $);
+
+							// Check for 'More' comments (Rare case)
+							var more = $('td.title a[href^="/x?"]');
+							if (more.length){
+								// Whatever 'fnid' means
+								var fnid = more.attr('href').match(/fnid=(\w+)/);
+								if (fnid){
+									fnid = fnid[1];
+									post.more_comments_id = fnid;
+								}
+							}
+
+							var postJSON = JSON.stringify(post);
+							redis.set('comments' + commentID, postJSON);
+							redis.expire('comments' + commentID, CACHE_EXP);
+							if (callback) postJSON = callback + '(' + postJSON + ')';
+							res.sendBody(postJSON);
+
+							window.close();
 						}
 					});
 				});
