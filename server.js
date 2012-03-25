@@ -62,7 +62,6 @@ router.map(function(){
 			} else {
 				request({
 					url: ROOT_URL + (path!='news' ? path : ''),
-					forever: true
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
@@ -187,7 +186,6 @@ router.map(function(){
 			} else {
 				request({
 					url: ROOT_URL + 'item?id=' + postID,
-					forever: true
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
@@ -308,7 +306,6 @@ router.map(function(){
 			} else {
 				request({
 					url: ROOT_URL + 'x?fnid=' + commentID,
-					forever: true
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
