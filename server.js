@@ -18,7 +18,7 @@ if (process.env.REDISTOGO_URL){
 var router = new(journey.Router);
 
 var ROOT_URL = 'http://news.ycombinator.com/',
-	CACHE_EXP = 60*5; // 5 mins
+	CACHE_EXP = 60*10; // 10 mins
 
 var cleanContent = function(html){
 	// yea yea regex to clean HTML is lame yada yada
