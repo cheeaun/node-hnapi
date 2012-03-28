@@ -330,7 +330,7 @@ router.map(function(){
 									more_comments_id: null
 								};
 
-							var commentRows = $('table:not(:has(table)):has(a[id^=up])');
+							var commentRows = $('table:not(:has(table)):has(.comment)');
 							post.comments = processComments(commentRows, $);
 
 							// Check for 'More' comments (Rare case)
