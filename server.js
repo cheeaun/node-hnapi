@@ -60,7 +60,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				request(ROOT_URL + (path!='news' ? path : ''), function(e, r, body){
+				request({
+					url: ROOT_URL + (path!='news' ? path : ''),
+					forever: true
+				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
 						return;
@@ -182,7 +185,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				request(ROOT_URL + 'item?id=' + postID, function(e, r, body){
+				request({
+					url: ROOT_URL + 'item?id=' + postID,
+					forever: true
+				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
 						return;
@@ -300,7 +306,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				request(ROOT_URL + 'x?fnid=' + commentID, function(e, r, body){
+				request({
+					url: ROOT_URL + 'x?fnid=' + commentID,
+					forever: true
+				}, function(e, r, body){
 					if (e || r.statusCode != 200){
 						errorRespond(res, e, callback);
 						return;
