@@ -38,7 +38,7 @@ var errorRespond = function(response, error, callback){
 		headers: response.baseResponse.headers
 	});
 	console.error(error);
-	if (error.code == 'ECONNRESET') process.exit(1);
+	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED') process.exit(1);
 };
 
 // Create the routing table
