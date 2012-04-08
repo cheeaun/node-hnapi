@@ -215,7 +215,8 @@ router.map(function(){
 								voteLink = table1.find('td a[id^=up]'),
 								id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
 								cell1 = table1.find('td.title:has(a)'),
-								link, title, url, domain, points, user, timeAgo, commentsCount, content,
+								link, title, url, domain, points, user, timeAgo, commentsCount,
+								content = null,
 								poll = null,
 								type = 'link';
 							if (cell1.length){
@@ -229,9 +230,16 @@ router.map(function(){
 								user = userLink.text() || null;
 								timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
 								commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
-								var questionCell = cell2.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea))');
-								content = questionCell.length ? cleanContent(questionCell.html()) : null;
-								var pollCell = questionCell.parent('tr').nextAll('tr:has(td):first').find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+								var nextContentRows = cell2.parent('tr').nextAll('tr:has(td)');
+								var questionCell = nextContentRows.eq(0).find('td:not(:empty):not(:has(textarea))');
+								var pollCell;
+								// The content could be question+poll, question or poll.
+								if (questionCell.length && !questionCell.find('td.comment').length){
+									content = cleanContent(questionCell.html());
+									pollCell = nextContentRows.eq(1).find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+								} else {
+									pollCell = nextContentRows.eq(0).find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+								}
 								if (pollCell.length){
 									poll = [];
 									pollCell.find('td.comment').each(function(){
