@@ -92,7 +92,7 @@ router.map(function(){
 								var voteLink = row1.find('td a[id^=up]'),
 									id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
 									cell1 = row1.find('td.title:has(a)'),
-									link = cell1.find('a'),
+									link = cell1.find('a:first'),
 									title = link.text().trim(),
 									url = link.attr('href'),
 									domain = (cell1.find('.comhead').text().match(/\(\s?([^()]+)\s?\)/i) || [,null])[1],
