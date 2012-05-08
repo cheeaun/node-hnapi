@@ -52,7 +52,10 @@ router.map(function(){
 			project_url: 'https://github.com/cheeaun/node-hnapi/',
 			documentation_url: 'https://github.com/cheeaun/node-hnapi/wiki/API-Documentation',
 			author: 'cheeaun',
-			author_url: 'http://cheeaun.com/'
+			author_url: 'http://cheeaun.com/',
+			process: {
+				versions: process.versions,
+			}
 		}, null, 4));
 	});
 	
