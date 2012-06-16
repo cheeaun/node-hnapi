@@ -3,8 +3,8 @@ Hacker News (unofficial) API
 
 Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Currently being used by [my other project](https://github.com/cheeaun/hnmobile). Feel free to fork and contribute.
 
-- API: [http://node-hnapi.herokuapp.com/]()
-- API Documentation: [https://github.com/cheeaun/node-hnapi/wiki/API-Documentation]()
+- API: <http://node-hnapi.herokuapp.com/>
+- API Documentation: <https://github.com/cheeaun/node-hnapi/wiki/API-Documentation>
 
 Quick Start
 ----------
@@ -26,6 +26,6 @@ Licensed under the [MIT License](http://cheeaun.mit-license.org/).
 Other APIs
 ----------
 
-- [http://api.ihackernews.com/]()
-- [http://hndroidapi.appspot.com/]()
-- [http://www.hnsearch.com/api]()
+- <http://api.ihackernews.com/>
+- <http://hndroidapi.appspot.com/>
+- <http://www.hnsearch.com/api>
