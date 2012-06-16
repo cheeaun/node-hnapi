@@ -12,7 +12,17 @@ if (process.env.REDISTOGO_URL){
 	redis = require('redis').createClient(rtg.port, rtg.hostname);
 	redis.auth(rtg.auth.split(':')[1]);
 } else {
-	redis = require('redis').createClient();
+	var redisConfig;
+	try {
+		var config= require('./config');
+		redisConfig = config.redis;
+	} catch (e){};
+	if (redisConfig){
+		redis = require('redis').createClient(redisConfig.port, redisConfig.host);
+		if (redisConfig.password) redis.auth(redisConfig.password);
+	} else {
+		redis = require('redis').createClient();
+	}
 }
 
 var router = new(journey.Router);
