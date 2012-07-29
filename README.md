@@ -4,6 +4,7 @@ Hacker News (unofficial) API
 Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Currently being used by [my other project](https://github.com/cheeaun/hnmobile). Feel free to fork and contribute.
 
 - API: <http://node-hnapi.herokuapp.com/>
+- API (backup): <http://node-hnapi.jit.su/>
 - API Documentation: <https://github.com/cheeaun/node-hnapi/wiki/API-Documentation>
 
 Quick Start
