@@ -1,28 +1,36 @@
-var journey = require('journey'),
+var nconf = require('nconf'),
+	journey = require('journey'),
 	request = require('request'),
 	jsdom = require('jsdom'),
 	fs = require('fs'),
 	jquery = fs.readFileSync("./jquery.min.js").toString(),
 	zlib = require('zlib');
 
+nconf.argv()
+	.env()
+	.file('config.json')
+	.defaults({
+		port: 80,
+		/*
+		redis: {
+			host: '127.0.0.1',
+			port: 6379,
+			password: ''
+		}
+		*/
+	});
+
 // http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 var redis;
-if (process.env.REDISTOGO_URL){
-	var rtg = require('url').parse(process.env.REDISTOGO_URL);
+if (nconf.get('REDISTOGO_URL')){
+	var rtg = require('url').parse(nconf.get('REDISTOGO_URL'));
 	redis = require('redis').createClient(rtg.port, rtg.hostname);
 	redis.auth(rtg.auth.split(':')[1]);
+} else if (nconf.get('redis')){
+	redis = require('redis').createClient(nconf.get('redis:port'), nconf.get('redis:host'));
+	if (nconf.get('redis:password')) redis.auth(nconf.get('redis:password'));
 } else {
-	var redisConfig;
-	try {
-		var config= require('./config');
-		redisConfig = config.redis;
-	} catch (e){};
-	if (redisConfig){
-		redis = require('redis').createClient(redisConfig.port, redisConfig.host);
-		if (redisConfig.password) redis.auth(redisConfig.password);
-	} else {
-		redis = require('redis').createClient();
-	}
+	redis = require('redis').createClient();
 }
 
 var router = new(journey.Router);
@@ -423,4 +431,4 @@ require('http').createServer(function (request, response) {
 			}
 		});
 	});
-}).listen(process.env.PORT || 3000);
+}).listen(nconf.get('PORT') || nconf.get('app_port') || nconf.get('port')); // Port number for Heroku, Nodester & default
