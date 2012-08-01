@@ -3,7 +3,7 @@ var nconf = require('nconf'),
 	request = require('request'),
 	jsdom = require('jsdom'),
 	fs = require('fs'),
-	jquery = fs.readFileSync("./jquery.min.js").toString(),
+	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
 	zlib = require('zlib');
 
 nconf.argv()
