@@ -11,7 +11,8 @@
     "request": "2.9.x",
     "jsdom": "0.2.x",
     "redis": "0.7.x",
-    "nconf": "0.6.x"
+    "nconf": "0.6.x",
+    "nodetime": "0.4.x"
   },
   "subdomain": "node-hnapi",
   "scripts": {
