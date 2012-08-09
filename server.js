@@ -1,24 +1,33 @@
-var nconf = require('nconf'),
-	journey = require('journey'),
-	request = require('request'),
-	jsdom = require('jsdom'),
-	fs = require('fs'),
-	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
-	zlib = require('zlib');
-
+var nconf = require('nconf');
 nconf.argv()
 	.env()
 	.file('config.json')
 	.defaults({
-		port: 80,
+		port: 80
 		/*
 		redis: {
 			host: '127.0.0.1',
 			port: 6379,
 			password: ''
+		},
+		nodetime: {
+			accountKey: '',
+			appName: 'HNapi'
 		}
 		*/
 	});
+
+if (nconf.get('nodetime:accountKey')) require('nodetime').profile({
+	accountKey: nconf.get('nodetime:accountKey'),
+	appName: nconf.get('nodetime:appName') || 'HNapi'
+});
+
+var journey = require('journey'),
+	request = require('request'),
+	jsdom = require('jsdom'),
+	fs = require('fs'),
+	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
+	zlib = require('zlib');
 
 // http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 var redis;
