@@ -81,7 +81,7 @@ router.map(function(){
 			author: 'cheeaun',
 			author_url: 'http://cheeaun.com/',
 			process: {
-				versions: process.versions,
+				versions: process.versions
 			}
 		}, null, 4));
 	});
