@@ -5,8 +5,8 @@
 		"port": 6379,
 		"password": ""
 	},
-	nodetime: {
-		accountKey: '',
-		appName: 'HNapi'
+	"nodetime": {
+		"accountKey": "",
+		"appName": "HNapi"
 	}
 }
