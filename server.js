@@ -27,20 +27,35 @@ var journey = require('journey'),
 	jsdom = require('jsdom'),
 	fs = require('fs'),
 	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
-	zlib = require('zlib');
+	zlib = require('zlib'),
+	redis = require('redis');
 
 // http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
-var redis;
+var redisClient;
+var redisOptions = {
+	max_attempts: 10
+};
+if (nconf.get('redis:parser')) redisOptions.parser = nconf.get('redis:parser');
 if (nconf.get('REDISTOGO_URL')){
 	var rtg = require('url').parse(nconf.get('REDISTOGO_URL'));
-	redis = require('redis').createClient(rtg.port, rtg.hostname);
-	redis.auth(rtg.auth.split(':')[1]);
+	redisClient = redis.createClient(rtg.port, rtg.hostname, redisOptions);
+	redisClient.auth(rtg.auth.split(':')[1]);
 } else if (nconf.get('redis')){
-	redis = require('redis').createClient(nconf.get('redis:port'), nconf.get('redis:host'));
-	if (nconf.get('redis:password')) redis.auth(nconf.get('redis:password'));
+	redisClient = redis.createClient(nconf.get('redis:port'), nconf.get('redis:host'), redisOptions);
+	if (nconf.get('redis:password')) redisClient.auth(nconf.get('redis:password'));
 } else {
-	redis = require('redis').createClient();
+	redisClient = redis.createClient(null, null, redisOptions);
 }
+redisClient.on('error', function(){
+	console.error('Unable to connect to Redis server. Responses will not be cached.');
+	redisClient = {
+		get: function(key, fn){
+			fn();
+		},
+		set: function(){},
+		expire: function(){}
+	};
+});
 
 var router = new(journey.Router);
 
@@ -88,7 +103,7 @@ router.map(function(){
 	
 	this.get(/^(news|news2|newest|ask|best|active|noobstories)$/).bind(function (req, res, path, params){
 		var callback = params.callback;
-		redis.get(path, function(err, result){
+		redisClient.get(path, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -153,8 +168,8 @@ router.map(function(){
 							}
 
 							var postsJSON = JSON.stringify(posts);
-							redis.set(path, postsJSON);
-							redis.expire(path, CACHE_EXP);
+							redisClient.set(path, postsJSON);
+							redisClient.expire(path, CACHE_EXP);
 							if (callback) postsJSON = callback + '(' + postsJSON + ')';
 							res.sendBody(postsJSON);
 
@@ -216,7 +231,7 @@ router.map(function(){
 	
 	this.get(/^item\/(\d+)$/).bind(function(req, res, postID, params){
 		var callback = params.callback;
-		redis.get('post' + postID, function(err, result){
+		redisClient.get('post' + postID, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -332,8 +347,8 @@ router.map(function(){
 							}
 
 							var postJSON = JSON.stringify(post);
-							redis.set('post' + postID, postJSON);
-							redis.expire('post' + postID, CACHE_EXP);
+							redisClient.set('post' + postID, postJSON);
+							redisClient.expire('post' + postID, CACHE_EXP);
 							if (callback) postJSON = callback + '(' + postJSON + ')';
 							res.sendBody(postJSON);
 
@@ -348,7 +363,7 @@ router.map(function(){
 	// 'More' comments, experimental API.
 	this.get(/^comments\/(\w+)$/).bind(function(req, res, commentID, params){
 		var callback = params.callback;
-		redis.get('comments' + commentID, function(err, result){
+		redisClient.get('comments' + commentID, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -404,8 +419,8 @@ router.map(function(){
 							}
 
 							var postJSON = JSON.stringify(post);
-							redis.set('comments' + commentID, postJSON);
-							redis.expire('comments' + commentID, CACHE_EXP);
+							redisClient.set('comments' + commentID, postJSON);
+							redisClient.expire('comments' + commentID, CACHE_EXP);
 							if (callback) postJSON = callback + '(' + postJSON + ')';
 							res.sendBody(postJSON);
 
