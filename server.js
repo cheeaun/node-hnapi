@@ -129,7 +129,8 @@ router.map(function(){
 							}
 							var $ = window.$;
 							var posts = [],
-								rows = $('td table:has(td.title) tr:has(td)');
+								rows = $('td table:has(td.title) tr');
+							rows = rows.has('td');
 							for (var i=0, l=rows.length; i<l; i+=2){
 								var row1 = $(rows[i]),
 									row2 = $(rows[i+1]);
