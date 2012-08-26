@@ -53,7 +53,8 @@ redisClient.on('error', function(){
 			fn();
 		},
 		set: function(){},
-		expire: function(){}
+		expire: function(){},
+		del: function(){}
 	};
 });
 
@@ -178,6 +179,9 @@ router.map(function(){
 						}
 					});
 				});
+				
+				// If 'news' expired, 'news2' should expire too
+				if (path == 'news') redisClient.del('news2');
 			}
 		});
 	});
