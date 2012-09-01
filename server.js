@@ -109,8 +109,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
+				var hnURL = ROOT_URL + (path!='news' ? path : '');
+				console.log('Fetching ' + hnURL);
 				request({
-					url: ROOT_URL + (path!='news' ? path : ''),
+					url: hnURL,
 					forever: true,
 					pool: {
 						maxSockets: 100
@@ -241,8 +243,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
+				var hnURL = ROOT_URL + 'item?id=' + postID;
+				console.log('Fetching ' + hnURL);
 				request({
-					url: ROOT_URL + 'item?id=' + postID,
+					url: hnURL,
 					forever: true,
 					pool: {
 						maxSockets: 100
@@ -373,8 +377,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
+				var hnURL = ROOT_URL + 'x?fnid=' + commentID;
+				console.log('Fetching ' + hnURL);
 				request({
-					url: ROOT_URL + 'x?fnid=' + commentID,
+					url: hnURL,
 					forever: true,
 					pool: {
 						maxSockets: 100
