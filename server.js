@@ -92,6 +92,16 @@ router.map(function(){
 			}
 		}, null, 4));
 	});
+
+	this.get('/robots.txt').bind(function(req, res){
+		res.respond({
+			status: 200,
+			body: 'User-agent: *\nDisallow: /',
+			headers: {
+				'Content-Type': 'text/plain; charset=UTF-8'
+			}
+		});
+	});
 	
 	this.get(/^(news|news2|newest|ask|best|active|noobstories)$/).bind(function (req, res, path, params){
 		var callback = params.callback;
