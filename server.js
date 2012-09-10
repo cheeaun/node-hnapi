@@ -9,18 +9,9 @@ nconf.argv()
 			host: '127.0.0.1',
 			port: 6379,
 			password: ''
-		},
-		nodetime: {
-			accountKey: '',
-			appName: 'HNapi'
 		}
 		*/
 	});
-
-if (nconf.get('nodetime:accountKey')) require('nodetime').profile({
-	accountKey: nconf.get('nodetime:accountKey'),
-	appName: nconf.get('nodetime:appName') || 'HNapi'
-});
 
 var journey = require('journey'),
 	request = require('request'),
