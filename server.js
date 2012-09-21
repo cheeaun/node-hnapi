@@ -436,6 +436,63 @@ router.map(function(){
 			}
 		});
 	});
+	
+	this.get(/^user\/(\w+)$/).bind(function(req, res, userID, params){
+		var callback = params.callback;
+		redisClient.get('user' + userID, function(err, result){
+			if (result){
+				if (callback) result = callback + '(' + result + ')';
+				res.sendBody(result);
+			} else {
+				request({
+					url: ROOT_URL + 'user?id=' + userID,
+					forever: true,
+					pool: {
+						maxSockets: 100
+					}
+				}, function(e, r, body){
+					if (e || r.statusCode != 200){
+						errorRespond(res, e, callback);
+						return;
+					}
+					jsdom.env({
+						html: body,
+						src: [jquery],
+						done: function(err, window){
+							if (err){
+								errorRespond(res, err, callback);
+								return;
+							}
+							var $ = window.$;
+							
+							var cells = $('form tr td:odd');
+							var id = cells.eq(0).text(),
+								created = cells.eq(1).text(),
+								karma = parseInt(cells.eq(2).text(), 10),
+								avg = parseFloat(cells.eq(3).text()),
+								about = cleanContent(cells.eq(4).html());
+							
+							var user = {
+									id: id,
+									created: created,
+									karma: karma,
+									avg: avg,
+									about: about
+								};
+							
+							var userJSON = JSON.stringify(user);
+							redisClient.set('user' + userID, userJSON);
+							redisClient.expire('user' + userID, CACHE_EXP);
+							if (callback) userJSON = callback + '(' + userJSON + ')';
+							res.sendBody(userJSON);
+
+							window.close();
+						}
+					});
+				});
+			}
+		});
+	});
 });
 
 require('http').createServer(function (request, response) {
