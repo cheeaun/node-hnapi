@@ -8,9 +8,9 @@
   },
   "dependencies": {
     "journey": "0.4.x",
-    "request": "2.9.x",
+    "request": "2.11.x",
     "jsdom": "0.2.x",
-    "redis": "0.7.x",
+    "redis": "0.8.x",
     "nconf": "0.6.x"
   },
   "subdomain": "node-hnapi",
