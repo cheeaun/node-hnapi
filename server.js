@@ -451,8 +451,10 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
+				var hnURL = ROOT_URL + 'user?id=' + userID;
+				console.log('Fetching ' + hnURL);
 				request({
-					url: ROOT_URL + 'user?id=' + userID,
+					url: hnURL,
 					forever: true,
 					pool: {
 						maxSockets: 100
