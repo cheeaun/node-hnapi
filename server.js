@@ -116,7 +116,7 @@ router.map(function(){
 					url: hnURL,
 					forever: true,
 					pool: {
-						maxSockets: 100
+						maxSockets: 1000
 					}
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
@@ -250,7 +250,7 @@ router.map(function(){
 					url: hnURL,
 					forever: true,
 					pool: {
-						maxSockets: 100
+						maxSockets: 1000
 					}
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
@@ -384,7 +384,7 @@ router.map(function(){
 					url: hnURL,
 					forever: true,
 					pool: {
-						maxSockets: 100
+						maxSockets: 1000
 					}
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
@@ -457,7 +457,7 @@ router.map(function(){
 					url: hnURL,
 					forever: true,
 					pool: {
-						maxSockets: 100
+						maxSockets: 1000
 					}
 				}, function(e, r, body){
 					if (e || r.statusCode != 200){
