@@ -26,7 +26,6 @@ var redisClient;
 var redisOptions = {
 	max_attempts: 10
 };
-if (nconf.get('redis:parser')) redisOptions.parser = nconf.get('redis:parser');
 if (nconf.get('REDISTOGO_URL')){
 	var rtg = require('url').parse(nconf.get('REDISTOGO_URL'));
 	redisClient = redis.createClient(rtg.port, rtg.hostname, redisOptions);
