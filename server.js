@@ -190,7 +190,7 @@ router.map(function(){
 			var row = $(rows[i]),
 				comment = {},
 				level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
-				metadata = row.find('.comhead:has(a)'),
+				metadata = row.find('.comhead').has('a'),
 				user = null,
 				timeAgo = '',
 				id = '',
