@@ -201,7 +201,16 @@ router.map(function(){
 				timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
 				id = (metadata.find('a[href^=item]').attr('href').match(/\d+/) || [])[0];
 				var commentEl = row.find('.comment');
-				commentEl.find('a[href^=reply]').remove(); // Remove 'reply' link
+				var replyLink = commentEl.find('a[href^=reply]');
+				// Sometimes the markup becomes nice, and 'reply' link is not part of the comments
+				if (replyLink.length){
+					// Remove 'reply' link
+					if (replyLink.parent('u').length){
+						replyLink.parent().remove();
+					} else {
+						replyLink.remove();
+					}
+				}
 				content = cleanContent(commentEl.html());
 			}
 			comments.push({
