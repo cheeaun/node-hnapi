@@ -1,6 +1,6 @@
 {
   "name": "node-hnapi",
-  "version": "0.1.1-8",
+  "version": "0.1.1",
   "node": "0.8.1",
   "engines": {
     "node": "0.8.x",

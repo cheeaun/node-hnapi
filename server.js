@@ -83,8 +83,9 @@ var errorRespond = function(response, error, callback){
 router.map(function(){
 	this.root.bind(function(req, res){
 		res.sendBody(JSON.stringify({
-			title: 'Hacker News (unofficial) API, powered by Node.js',
-			version: '0.1',
+			name: 'node-hnapi',
+			desc: 'Unofficial Hacker News API',
+			version: '0.1.1',
 			project_url: 'https://github.com/cheeaun/node-hnapi/',
 			documentation_url: 'https://github.com/cheeaun/node-hnapi/wiki/API-Documentation',
 			author: 'cheeaun',
