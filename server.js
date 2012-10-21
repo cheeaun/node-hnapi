@@ -191,7 +191,7 @@ router.map(function(){
 				comment = {},
 				level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
 				metadata = row.find('.comhead').has('a'),
-				user = null,
+				user = '',
 				timeAgo = '',
 				id = '',
 				content = '[deleted]';
