@@ -170,8 +170,9 @@ router.map(function(){
 					}
 
 					var postsJSON = JSON.stringify(posts);
-					redisClient.set(path, postsJSON);
-					redisClient.expire(path, CACHE_EXP);
+					redisClient.set(path, postsJSON, function(){
+						redisClient.expire(path, CACHE_EXP);
+					});
 					if (callback) postsJSON = callback + '(' + postsJSON + ')';
 					res.sendBody(postsJSON);
 				});
@@ -357,8 +358,9 @@ router.map(function(){
 					}
 
 					var postJSON = JSON.stringify(post);
-					redisClient.set('post' + postID, postJSON);
-					redisClient.expire('post' + postID, CACHE_EXP);
+					redisClient.set('post' + postID, postJSON, function(){
+						redisClient.expire('post' + postID, CACHE_EXP);
+					});
 					if (callback) postJSON = callback + '(' + postJSON + ')';
 					res.sendBody(postJSON);
 				});
@@ -422,8 +424,9 @@ router.map(function(){
 					}
 
 					var postJSON = JSON.stringify(post);
-					redisClient.set('comments' + commentID, postJSON);
-					redisClient.expire('comments' + commentID, CACHE_EXP);
+					redisClient.set('comments' + commentID, postJSON, function(){
+						redisClient.expire('comments' + commentID, CACHE_EXP);
+					});
 					if (callback) postJSON = callback + '(' + postJSON + ')';
 					res.sendBody(postJSON);
 				});
@@ -472,8 +475,9 @@ router.map(function(){
 						};
 					
 					var userJSON = JSON.stringify(user);
-					redisClient.set('user' + userID, userJSON);
-					redisClient.expire('user' + userID, CACHE_EXP);
+					redisClient.set('user' + userID, userJSON, function(){
+						redisClient.expire('user' + userID, CACHE_EXP);
+					});
 					if (callback) userJSON = callback + '(' + userJSON + ')';
 					res.sendBody(userJSON);
 				});
