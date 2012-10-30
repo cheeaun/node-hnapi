@@ -285,15 +285,15 @@ router.map(function(){
 						user = userLink.text() || null;
 						timeAgo = userLink[0] ? userLink[0].nextSibling.textContent.replace('|', '').trim() : '';
 						commentsCount = parseInt(cell2.find('a[href^=item]').text(), 10) || 0;
-						var nextContentRows = cell2.parent('tr').nextAll('tr:not(:empty)');
-						var questionCell = nextContentRows.eq(0).find('td:not(:empty):not(:has(textarea))');
+						var nextContentRows = cell2.parent('tr').nextAll('tr:not(:empty):not(:has(textarea))');
+						var questionCell = nextContentRows.eq(0).children('td:not(:empty)');
 						var pollCell;
 						// The content could be question+poll, question or poll.
 						if (questionCell.length && !questionCell.find('td.comment').length){
 							content = cleanContent(questionCell.html());
-							pollCell = nextContentRows.eq(1).find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+							pollCell = nextContentRows.eq(1).find('td:not(:empty):has(td.comment)');
 						} else {
-							pollCell = nextContentRows.eq(0).find('td:not(:empty):not(:has(textarea)):has(td.comment)');
+							pollCell = nextContentRows.eq(0).find('td:not(:empty):has(td.comment)');
 						}
 						if (pollCell.length){
 							poll = [];
