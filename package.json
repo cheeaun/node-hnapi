@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "journey": "0.4.x",
-    "request": "2.11.x",
     "domino": "1.0.x",
     "redis": "0.8.x",
     "nconf": "0.6.x"
