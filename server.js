@@ -114,9 +114,9 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + (path!='news' ? path : '');
 				console.log('Fetching ' + hnURL);
-				request.get(hnURL).end(function(r){
-					if (!r.ok){
-						errorRespond(res, r, callback);
+				request.get(hnURL).end(function(err, r){
+					if (err || !r.ok){
+						errorRespond(res, err, callback);
 						return;
 					}
 
@@ -246,9 +246,9 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'item?id=' + postID;
 				console.log('Fetching ' + hnURL);
-				request.get(hnURL).end(function(r){
-					if (!r.ok){
-						errorRespond(res, r, callback);
+				request.get(hnURL).end(function(err, r){
+					if (err || !r.ok){
+						errorRespond(res, err, callback);
 						return;
 					}
 
@@ -367,9 +367,9 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'x?fnid=' + commentID;
 				console.log('Fetching ' + hnURL);
-				request.get(hnURL).end(function(r){
-					if (!r.ok){
-						errorRespond(res, r, callback);
+				request.get(hnURL).end(function(err, r){
+					if (err || !r.ok){
+						errorRespond(res, err, callback);
 						return;
 					}
 					var body = r.text;
@@ -428,9 +428,9 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'user?id=' + userID;
 				console.log('Fetching ' + hnURL);
-				request.get(hnURL).end(function(r){
-					if (!r.ok){
-						errorRespond(res, r, callback);
+				request.get(hnURL).end(function(err, r){
+					if (err || !r.ok){
+						errorRespond(res, err, callback);
 						return;
 					}
 
