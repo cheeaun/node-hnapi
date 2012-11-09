@@ -116,7 +116,7 @@ router.map(function(){
 				console.log('Fetching ' + hnURL);
 				request.get(hnURL).end(function(r){
 					if (!r.ok){
-						errorRespond(res, r.text, callback);
+						errorRespond(res, r, callback);
 						return;
 					}
 
@@ -248,7 +248,7 @@ router.map(function(){
 				console.log('Fetching ' + hnURL);
 				request.get(hnURL).end(function(r){
 					if (!r.ok){
-						errorRespond(res, r.text, callback);
+						errorRespond(res, r, callback);
 						return;
 					}
 
@@ -369,7 +369,7 @@ router.map(function(){
 				console.log('Fetching ' + hnURL);
 				request.get(hnURL).end(function(r){
 					if (!r.ok){
-						errorRespond(res, r.text, callback);
+						errorRespond(res, r, callback);
 						return;
 					}
 					var body = r.text;
@@ -430,7 +430,7 @@ router.map(function(){
 				console.log('Fetching ' + hnURL);
 				request.get(hnURL).end(function(r){
 					if (!r.ok){
-						errorRespond(res, r.text, callback);
+						errorRespond(res, r, callback);
 						return;
 					}
 
