@@ -14,7 +14,7 @@ nconf.argv()
 	});
 
 var journey = require('journey'),
-	request = require('request'),
+	request = require('superagent'),
 	domino = require('domino'),
 	fs = require('fs'),
 	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
@@ -114,18 +114,13 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + (path!='news' ? path : '');
 				console.log('Fetching ' + hnURL);
-				request({
-					url: hnURL,
-					forever: true,
-					pool: {
-						maxSockets: 1000
-					}
-				}, function(e, r, body){
-					if (e || r.statusCode != 200){
-						errorRespond(res, e, callback);
+				request.get(hnURL).end(function(r){
+					if (!r.ok){
+						errorRespond(res, r.text, callback);
 						return;
 					}
-					var window = domino.createWindow(body);
+
+					var window = domino.createWindow(r.text);
 					window._run(jquery);
 					var $ = window.$;
 
@@ -176,7 +171,7 @@ router.map(function(){
 					if (callback) postsJSON = callback + '(' + postsJSON + ')';
 					res.sendBody(postsJSON);
 				});
-				
+
 				// If 'news' expired, 'news2' should expire too
 				if (path == 'news') redisClient.del('news2');
 			}
@@ -251,19 +246,13 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'item?id=' + postID;
 				console.log('Fetching ' + hnURL);
-				request({
-					url: hnURL,
-					forever: true,
-					pool: {
-						maxSockets: 1000
-					}
-				}, function(e, r, body){
-					if (e || r.statusCode != 200){
-						errorRespond(res, e, callback);
+				request.get(hnURL).end(function(r){
+					if (!r.ok){
+						errorRespond(res, r.text, callback);
 						return;
 					}
 
-					var window = domino.createWindow(body);
+					var window = domino.createWindow(r.text);
 					window._run(jquery);
 					var $ = window.$;
 
@@ -378,17 +367,13 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'x?fnid=' + commentID;
 				console.log('Fetching ' + hnURL);
-				request({
-					url: hnURL,
-					forever: true,
-					pool: {
-						maxSockets: 1000
-					}
-				}, function(e, r, body){
-					if (e || r.statusCode != 200){
-						errorRespond(res, e, callback);
+				request.get(hnURL).end(function(r){
+					if (!r.ok){
+						errorRespond(res, r.text, callback);
 						return;
 					}
+					var body = r.text;
+
 					// Link has expired. Classic HN error message.
 					if (!/[<>]/.test(body) && /expired/i.test(body)){
 						var result = JSON.stringify({
@@ -443,19 +428,13 @@ router.map(function(){
 			} else {
 				var hnURL = ROOT_URL + 'user?id=' + userID;
 				console.log('Fetching ' + hnURL);
-				request({
-					url: hnURL,
-					forever: true,
-					pool: {
-						maxSockets: 1000
-					}
-				}, function(e, r, body){
-					if (e || r.statusCode != 200){
-						errorRespond(res, e, callback);
+				request.get(hnURL).end(function(r){
+					if (!r.ok){
+						errorRespond(res, r.text, callback);
 						return;
 					}
 
-					var window = domino.createWindow(body);
+					var window = domino.createWindow(r.text);
 					window._run(jquery);
 					var $ = window.$;
 
