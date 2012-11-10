@@ -112,11 +112,11 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				path = (path == 'news') ? '' : ('/' + path);
-				console.log('Fetching ' + HOST + path);
+				var _path = (path == 'news') ? '' : ('/' + path);
+				console.log('Fetching ' + HOST + _path);
 				http.get({
 					host: HOST,
-					path: path
+					path: _path
 				}, function(r){
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
