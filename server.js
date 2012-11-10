@@ -51,8 +51,7 @@ redisClient.on('error', function(){
 var router = new(journey.Router);
 
 var HOST = 'news.ycombinator.com';
-var ROOT_URL = 'http://news.ycombinator.com/',
-	CACHE_EXP = 60*10; // 10 mins
+var CACHE_EXP = 60*10; // 10 mins
 
 var cleanContent = function(html){
 	// yea yea regex to clean HTML is lame yada yada
@@ -113,10 +112,11 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				console.log('Fetching ' + ROOT_URL + path);
+				path = (path == 'news') ? '' : ('/' + path);
+				console.log('Fetching ' + HOST + path);
 				http.get({
 					host: HOST,
-					path: '/' + path
+					path: path
 				}, function(r){
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
@@ -252,11 +252,11 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				var path = 'item?id=' + postID;
-				console.log('Fetching ' + ROOT_URL + path);
+				var path = '/item?id=' + postID;
+				console.log('Fetching ' + HOST + path);
 				http.get({
 					host: HOST,
-					path: '/' + path
+					path: path
 				}, function(r){
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
@@ -381,11 +381,11 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				var path = 'x?fnid=' + commentID;
-				console.log('Fetching ' + ROOT_URL + path);
+				var path = '/x?fnid=' + commentID;
+				console.log('Fetching ' + HOST + path);
 				http.get({
 					host: HOST,
-					path: '/' + path
+					path: path
 				}, function(r){
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
@@ -449,11 +449,11 @@ router.map(function(){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
 			} else {
-				var path = 'user?id=' + userID;
-				console.log('Fetching ' + ROOT_URL + path);
+				var path = '/user?id=' + userID;
+				console.log('Fetching ' + HOST + path);
 				http.get({
 					host: HOST,
-					path: '/' + path
+					path: path
 				}, function(r){
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
