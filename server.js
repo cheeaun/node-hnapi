@@ -52,6 +52,7 @@ redisClient.on('error', function(){
 var router = new(journey.Router);
 
 var HOST = 'news.ycombinator.com';
+var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 
 
 var cleanContent = function(html){
@@ -114,15 +115,23 @@ router.map(function(){
 				res.sendBody(result);
 			} else {
 				var _path = (path == 'news') ? '' : ('/' + path);
-				console.log('Fetching ' + HOST + _path);
-				http.get({
-					host: HOST,
-					path: _path
-				}, function(r){
+				var request = REQUESTS[_path];
+				if (!request){
+					console.log('Fetching ' + HOST + _path);
+					request = http.get({
+						host: HOST,
+						path: _path
+					});
+					REQUESTS[_path] = request;
+				}
+				request.on('response', function(r){
+					delete REQUESTS[_path];
+
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
 						return;
 					}
+
 					var body = '';
 					r.on('data', function (chunk){ body += chunk });
 					r.on('end', function(){
@@ -254,15 +263,23 @@ router.map(function(){
 				res.sendBody(result);
 			} else {
 				var path = '/item?id=' + postID;
-				console.log('Fetching ' + HOST + path);
-				http.get({
-					host: HOST,
-					path: path
-				}, function(r){
+				var request = REQUESTS[path];
+				if (!request){
+					console.log('Fetching ' + HOST + path);
+					request = http.get({
+						host: HOST,
+						path: path
+					});
+					REQUESTS[path] = request;
+				}
+				request.on('response', function(r){
+					delete REQUESTS[path];
+
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
 						return;
 					}
+
 					var body = '';
 					r.on('data', function (chunk){ body += chunk });
 					r.on('end', function(){
@@ -383,15 +400,23 @@ router.map(function(){
 				res.sendBody(result);
 			} else {
 				var path = '/x?fnid=' + commentID;
-				console.log('Fetching ' + HOST + path);
-				http.get({
-					host: HOST,
-					path: path
-				}, function(r){
+				var request = REQUESTS[path];
+				if (!request){
+					console.log('Fetching ' + HOST + path);
+					request = http.get({
+						host: HOST,
+						path: path
+					});
+					REQUESTS[path] = request;
+				}
+				request.on('response', function(r){
+					delete REQUESTS[path];
+
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
 						return;
 					}
+
 					var body = '';
 					r.on('data', function (chunk){ body += chunk });
 					r.on('end', function(){
@@ -451,15 +476,23 @@ router.map(function(){
 				res.sendBody(result);
 			} else {
 				var path = '/user?id=' + userID;
-				console.log('Fetching ' + HOST + path);
-				http.get({
-					host: HOST,
-					path: path
-				}, function(r){
+				var request = REQUESTS[path];
+				if (!request){
+					console.log('Fetching ' + HOST + path);
+					request = http.get({
+						host: HOST,
+						path: path
+					});
+					REQUESTS[path] = request;
+				}
+				request.on('response', function(r){
+					delete REQUESTS[path];
+
 					if (r.statusCode != 200){
 						errorRespond(res, {}, callback);
 						return;
 					}
+
 					var body = '';
 					r.on('data', function (chunk){ body += chunk });
 					r.on('end', function(){
