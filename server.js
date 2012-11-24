@@ -27,10 +27,14 @@ var redisClient;
 var redisOptions = {
 	max_attempts: 10
 };
-if (nconf.get('REDISTOGO_URL')){
-	var rtg = require('url').parse(nconf.get('REDISTOGO_URL'));
-	redisClient = redis.createClient(rtg.port, rtg.hostname, redisOptions);
-	redisClient.auth(rtg.auth.split(':')[1]);
+if (nconf.get('REDISCLOUD_URL')){
+	var url = require('url').parse(nconf.get('REDISCLOUD_URL'));
+	redisClient = redis.createClient(url.port, url.hostname, redisOptions);
+	redisClient.auth(url.auth.split(':')[1]);
+} else if (nconf.get('REDISTOGO_URL')){
+	var url = require('url').parse(nconf.get('REDISTOGO_URL'));
+	redisClient = redis.createClient(url.port, url.hostname, redisOptions);
+	redisClient.auth(url.auth.split(':')[1]);
 } else if (nconf.get('redis')){
 	redisClient = redis.createClient(nconf.get('redis:port'), nconf.get('redis:host'), redisOptions);
 	if (nconf.get('redis:password')) redisClient.auth(nconf.get('redis:password'));
