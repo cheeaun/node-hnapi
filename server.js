@@ -3,7 +3,7 @@ nconf.argv()
 	.env()
 	.file('config.json')
 	.defaults({
-		port: 80
+		port: 80,
 		/*
 		redis: {
 			host: '127.0.0.1',
@@ -11,6 +11,7 @@ nconf.argv()
 			password: ''
 		}
 		*/
+		cache_exp: 60*10 // 10 mins
 	});
 
 var http = require('http'),
@@ -51,7 +52,7 @@ redisClient.on('error', function(){
 var router = new(journey.Router);
 
 var HOST = 'news.ycombinator.com';
-var CACHE_EXP = 60*10; // 10 mins
+
 
 var cleanContent = function(html){
 	// yea yea regex to clean HTML is lame yada yada
@@ -171,7 +172,7 @@ router.map(function(){
 
 						var postsJSON = JSON.stringify(posts);
 						redisClient.set(path, postsJSON, function(){
-							redisClient.expire(path, CACHE_EXP);
+							redisClient.expire(path, nconf.get('cache_exp'));
 						});
 						if (callback) postsJSON = callback + '(' + postsJSON + ')';
 						res.sendBody(postsJSON);
@@ -361,7 +362,7 @@ router.map(function(){
 
 						var postJSON = JSON.stringify(post);
 						redisClient.set('post' + postID, postJSON, function(){
-							redisClient.expire('post' + postID, CACHE_EXP);
+							redisClient.expire('post' + postID, nconf.get('cache_exp'));
 						});
 						if (callback) postJSON = callback + '(' + postJSON + ')';
 						res.sendBody(postJSON);
@@ -430,7 +431,7 @@ router.map(function(){
 
 						var postJSON = JSON.stringify(post);
 						redisClient.set('comments' + commentID, postJSON, function(){
-							redisClient.expire('comments' + commentID, CACHE_EXP);
+							redisClient.expire('comments' + commentID, nconf.get('cache_exp'));
 						});
 						if (callback) postJSON = callback + '(' + postJSON + ')';
 						res.sendBody(postJSON);
@@ -483,7 +484,7 @@ router.map(function(){
 						
 						var userJSON = JSON.stringify(user);
 						redisClient.set('user' + userID, userJSON, function(){
-							redisClient.expire('user' + userID, CACHE_EXP);
+							redisClient.expire('user' + userID, nconf.get('cache_exp'));
 						});
 						if (callback) userJSON = callback + '(' + userJSON + ')';
 						res.sendBody(userJSON);
@@ -504,7 +505,7 @@ http.createServer(function (request, response) {
 			var headers = result.headers;
 			headers['Access-Control-Allow-Origin'] = '*';
 			headers['Vary'] = 'Accept-Encoding';
-			headers['Cache-Control'] = 'public, max-age=' + CACHE_EXP;
+			headers['Cache-Control'] = 'public, max-age=' + nconf.get('cache_exp');
 			if (/gzip/i.test(request.headers['accept-encoding'])){
 				zlib.gzip(result.body, function(err, data){
 					headers['Content-Encoding'] = 'gzip';
