@@ -20,42 +20,58 @@ var http = require('http'),
 	fs = require('fs'),
 	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
 	zlib = require('zlib'),
-	redis = require('redis');
+	redis = require('redis'),
+	memory = require('memory-cache');
 
-// http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 var redisClient;
-var redisOptions = {
-	max_attempts: 10
-};
-if (nconf.get('REDISCLOUD_URL')){
-	var url = require('url').parse(nconf.get('REDISCLOUD_URL'));
-	redisClient = redis.createClient(url.port, url.hostname, redisOptions);
+var redisURL = nconf.get('REDISCLOUD_URL') || nconf.get('REDISTOGO_URL') || nconf.get('redis_url');
+if (redisURL){
+	// http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
+	var url = require('url').parse(redisURL);
+	redisClient = redis.createClient(url.port, url.hostname);
 	redisClient.auth(url.auth.split(':')[1]);
-} else if (nconf.get('REDISTOGO_URL')){
-	var url = require('url').parse(nconf.get('REDISTOGO_URL'));
-	redisClient = redis.createClient(url.port, url.hostname, redisOptions);
-	redisClient.auth(url.auth.split(':')[1]);
-} else if (nconf.get('redis')){
-	redisClient = redis.createClient(nconf.get('redis:port'), nconf.get('redis:host'), redisOptions);
-	if (nconf.get('redis:password')) redisClient.auth(nconf.get('redis:password'));
 } else {
-	redisClient = redis.createClient(null, null, redisOptions);
+	redisClient = redis.createClient(null, null);
 }
-redisClient.on('error', function(){
-	console.error('Unable to connect to Redis server. Responses will not be cached.');
-	redisClient = {
-		get: function(key, fn){
-			fn();
-		},
-		set: function(){},
-		expire: function(){},
-		del: function(){}
-	};
+redisClient.on('connect', function(){
+	console.log('Connected to Redis server.');
+	memory.clear(); // Clear in-memory cache when Redis server is up
 });
+redisClient.on('error', function(){
+	console.error('Unable to connect to Redis server. Fallback to in-memory cache.');
+});
+
+var cache = {
+	get: function(key, fn){
+		if (redisClient.connected){
+			redisClient.get(key, fn);
+		} else {
+			var value = memory.get(key);
+			fn(null, value);
+		}
+	},
+	set: function(key, value, expiry){
+		if (redisClient.connected){
+			redisClient.set(key, value, function(){
+				if (expiry) redisClient.expire(key, expiry); // seconds
+			});
+		} else {
+			memory.put(key, value, expiry ? expiry*1000 : null); // miliseconds
+		}
+	},
+	del: function(key){
+		if (redisClient.connected){
+			redisClient.del(key);
+		} else {
+			memory.del(key);
+		}
+	}
+};
 
 var router = new(journey.Router);
 
 var HOST = 'news.ycombinator.com';
+var CACHE_EXP = nconf.get('cache_exp');
 var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 
 
@@ -113,7 +129,7 @@ router.map(function(){
 	
 	this.get(/^(news|news2|newest|ask|best|active|noobstories)$/).bind(function (req, res, path, params){
 		var callback = params.callback;
-		redisClient.get(path, function(err, result){
+		cache.get(path, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -184,9 +200,7 @@ router.map(function(){
 						}
 
 						var postsJSON = JSON.stringify(posts);
-						redisClient.set(path, postsJSON, function(){
-							redisClient.expire(path, nconf.get('cache_exp'));
-						});
+						cache.set(path, postsJSON, CACHE_EXP);
 						if (callback) postsJSON = callback + '(' + postsJSON + ')';
 						res.sendBody(postsJSON);
 					});
@@ -195,7 +209,7 @@ router.map(function(){
 				});
 				
 				// If 'news' expired, 'news2' should expire too
-				if (path == 'news') redisClient.del('news2');
+				if (path == 'news') cache.del('news2');
 			}
 		});
 	});
@@ -261,7 +275,7 @@ router.map(function(){
 	
 	this.get(/^item\/(\d+)$/).bind(function(req, res, postID, params){
 		var callback = params.callback;
-		redisClient.get('post' + postID, function(err, result){
+		cache.get('post' + postID, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -382,9 +396,7 @@ router.map(function(){
 						}
 
 						var postJSON = JSON.stringify(post);
-						redisClient.set('post' + postID, postJSON, function(){
-							redisClient.expire('post' + postID, nconf.get('cache_exp'));
-						});
+						cache.set('post' + postID, postJSON, CACHE_EXP);
 						if (callback) postJSON = callback + '(' + postJSON + ')';
 						res.sendBody(postJSON);
 					});
@@ -398,7 +410,7 @@ router.map(function(){
 	// 'More' comments, experimental API.
 	this.get(/^comments\/(\w+)$/).bind(function(req, res, commentID, params){
 		var callback = params.callback;
-		redisClient.get('comments' + commentID, function(err, result){
+		cache.get('comments' + commentID, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -459,9 +471,7 @@ router.map(function(){
 						}
 
 						var postJSON = JSON.stringify(post);
-						redisClient.set('comments' + commentID, postJSON, function(){
-							redisClient.expire('comments' + commentID, nconf.get('cache_exp'));
-						});
+						cache.set('comments' + commentID, postJSON, CACHE_EXP);
 						if (callback) postJSON = callback + '(' + postJSON + ')';
 						res.sendBody(postJSON);
 					}).on('error', function(e){
@@ -474,7 +484,7 @@ router.map(function(){
 	
 	this.get(/^user\/(\w+)$/).bind(function(req, res, userID, params){
 		var callback = params.callback;
-		redisClient.get('user' + userID, function(err, result){
+		cache.get('user' + userID, function(err, result){
 			if (result){
 				if (callback) result = callback + '(' + result + ')';
 				res.sendBody(result);
@@ -520,9 +530,7 @@ router.map(function(){
 							};
 						
 						var userJSON = JSON.stringify(user);
-						redisClient.set('user' + userID, userJSON, function(){
-							redisClient.expire('user' + userID, nconf.get('cache_exp'));
-						});
+						cache.set('user' + userID, userJSON, CACHE_EXP);
 						if (callback) userJSON = callback + '(' + userJSON + ')';
 						res.sendBody(userJSON);
 					}).on('error', function(e){
@@ -542,7 +550,7 @@ http.createServer(function (request, response) {
 			var headers = result.headers;
 			headers['Access-Control-Allow-Origin'] = '*';
 			headers['Vary'] = 'Accept-Encoding';
-			headers['Cache-Control'] = 'public, max-age=' + nconf.get('cache_exp');
+			headers['Cache-Control'] = 'public, max-age=' + CACHE_EXP;
 			if (/gzip/i.test(request.headers['accept-encoding'])){
 				zlib.gzip(result.body, function(err, data){
 					headers['Content-Encoding'] = 'gzip';
