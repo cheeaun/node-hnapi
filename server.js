@@ -168,7 +168,7 @@ router.map(function(){
 							if (!row2.length) break;
 							var voteLink = row1.find('td a[id^=up]'),
 								id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
-								cell1 = row1.find('td.title:has(a)'),
+								cell1 = row1.find('td.title').has('a'),
 								link = cell1.find('a:first'),
 								title = link.text().trim(),
 								url = link.attr('href'),
@@ -308,7 +308,7 @@ router.map(function(){
 						var table1 = $('td table:has(td.title,textarea)'),
 							voteLink = table1.find('td a[id^=up]'),
 							id = (voteLink.length ? (voteLink.attr('id').match(/\d+/) || [])[0] : null),
-							cell1 = table1.find('td.title:has(a)'),
+							cell1 = table1.find('td.title').has('a'),
 							link, title, url, domain, points, user, timeAgo, commentsCount,
 							content = null,
 							poll = null,
