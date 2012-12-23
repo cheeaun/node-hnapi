@@ -74,7 +74,6 @@ var HOST = 'news.ycombinator.com';
 var CACHE_EXP = nconf.get('cache_exp');
 var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 
-
 var cleanContent = function(html){
 	// yea yea regex to clean HTML is lame yada yada
 	html = html.replace(/">-+<\/font/ig, '"></font'); // remove weird invisible dashes at the end of comments
