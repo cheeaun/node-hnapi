@@ -10,7 +10,8 @@
     "domino": "1.0.x",
     "redis": "0.8.x",
     "memory-cache": "0.0.4",
-    "nconf": "0.6.x"
+    "nconf": "0.6.x",
+    "nodefly": "stable"
   },
   "subdomain": "node-hnapi",
   "scripts": {

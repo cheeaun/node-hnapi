@@ -1,3 +1,5 @@
+var nodefly = require('nodefly');
+
 var nconf = require('nconf');
 nconf.argv()
 	.env()
@@ -7,6 +9,9 @@ nconf.argv()
 		// redis_url: 'redis://USERNAME:PASSWORD@127.0.0.1:6379/',
 		cache_exp: 60*10 // 10 mins
 	});
+
+var nodeflyKey = nconf.get('nodefly_key');
+if (nodeflyKey) nodefly.profile(nodeflyKey, ['node-hnapi', require('os').hostname()]);
 
 var http = require('http'),
 	journey = require('journey'),
