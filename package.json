@@ -9,7 +9,7 @@
     "journey": "0.4.x",
     "domino": "1.0.x",
     "redis": "0.8.x",
-    "memory-cache": "0.0.4",
+    "memory-cache": "0.0.5",
     "nconf": "0.6.x",
     "nodefly": "stable"
   },
