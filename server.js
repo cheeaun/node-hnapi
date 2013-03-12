@@ -14,6 +14,7 @@ var nodeflyKey = nconf.get('nodefly_key');
 if (nodeflyKey) nodefly.profile(nodeflyKey, ['node-hnapi', require('os').hostname()]);
 
 var http = require('http'),
+  https = require('https'),
 	journey = require('journey'),
 	domino = require('domino'),
 	fs = require('fs'),
@@ -136,7 +137,7 @@ router.map(function(){
 				var request = REQUESTS[_path];
 				if (!request){
 					console.log('Fetching ' + HOST + _path);
-					request = http.get({
+					request = https.get({
 						host: HOST,
 						path: _path
 					});
@@ -282,7 +283,7 @@ router.map(function(){
 				var request = REQUESTS[path];
 				if (!request){
 					console.log('Fetching ' + HOST + path);
-					request = http.get({
+					request = https.get({
 						host: HOST,
 						path: path
 					});
@@ -417,7 +418,7 @@ router.map(function(){
 				var request = REQUESTS[path];
 				if (!request){
 					console.log('Fetching ' + HOST + path);
-					request = http.get({
+					request = https.get({
 						host: HOST,
 						path: path
 					});
@@ -491,7 +492,7 @@ router.map(function(){
 				var request = REQUESTS[path];
 				if (!request){
 					console.log('Fetching ' + HOST + path);
-					request = http.get({
+					request = https.get({
 						host: HOST,
 						path: path
 					});
