@@ -11,7 +11,8 @@
     "redis": "0.8.x",
     "memory-cache": "0.0.5",
     "nconf": "0.6.x",
-    "nodefly": "stable"
+    "nodefly": "stable",
+    "json-stringify-safe": "4.0.x"
   },
   "subdomain": "node-hnapi",
   "scripts": {

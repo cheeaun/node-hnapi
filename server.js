@@ -21,7 +21,8 @@ var http = require('http'),
 	jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString(),
 	zlib = require('zlib'),
 	redis = require('redis'),
-	memory = require('memory-cache');
+	memory = require('memory-cache'),
+	stringify = require('json-stringify-safe');
 
 var redisClient;
 var redisURL = nconf.get('REDISCLOUD_URL') || nconf.get('REDISTOGO_URL') || nconf.get('redis_url');
@@ -84,7 +85,7 @@ var cleanContent = function(html){
 };
 
 var errorRespond = function(response, error, callback){
-	var errorJSON = JSON.stringify({
+	var errorJSON = stringify({
 		error: error
 	});
 	if (callback) errorJSON = callback + '(' + errorJSON + ')';
