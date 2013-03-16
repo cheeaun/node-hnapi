@@ -1,5 +1,3 @@
-var nodefly = require('nodefly');
-
 var nconf = require('nconf');
 nconf.argv()
 	.env()
@@ -11,7 +9,10 @@ nconf.argv()
 	});
 
 var nodeflyKey = nconf.get('nodefly_key');
-if (nodeflyKey) nodefly.profile(nodeflyKey, ['node-hnapi', require('os').hostname()]);
+if (nodeflyKey){
+	var nodefly = require('nodefly');
+	nodefly.profile(nodeflyKey, ['node-hnapi', nconf.get('nodefly_hostname') || require('os').hostname()]);
+}
 
 var http = require('http'),
   https = require('https'),
