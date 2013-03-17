@@ -149,7 +149,7 @@ router.map(function(){
 					delete REQUESTS[_path];
 
 					if (r.statusCode != 200){
-						errorRespond(res, {response: r}, callback);
+						errorRespond(res, {statusCode: r.statusCode}, callback);
 						return;
 					}
 
@@ -295,7 +295,7 @@ router.map(function(){
 					delete REQUESTS[path];
 
 					if (r.statusCode != 200){
-						errorRespond(res, {response: r}, callback);
+						errorRespond(res, {statusCode: r.statusCode}, callback);
 						return;
 					}
 
@@ -430,7 +430,7 @@ router.map(function(){
 					delete REQUESTS[path];
 
 					if (r.statusCode != 200){
-						errorRespond(res, {response: r}, callback);
+						errorRespond(res, {statusCode: r.statusCode}, callback);
 						return;
 					}
 
@@ -504,7 +504,7 @@ router.map(function(){
 					delete REQUESTS[path];
 
 					if (r.statusCode != 200){
-						errorRespond(res, {response: r}, callback);
+						errorRespond(res, {statusCode: r.statusCode}, callback);
 						return;
 					}
 
