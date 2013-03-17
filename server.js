@@ -96,7 +96,7 @@ var errorRespond = function(response, error, callback){
 		headers: response.baseResponse.headers
 	});
 	console.error(error);
-	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED') process.nextTick(function(){
+	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
 		process.exit(1);
 	});
 };
