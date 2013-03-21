@@ -143,7 +143,7 @@ router.map(function(){
 						host: HOST,
 						path: _path
 					});
-					request.setTimeout(25000, function(){
+					request.setTimeout(20000, function(){
 						request.abort();
 						delete REQUESTS[_path];
 						errorRespond(res, {timeout: true}, callback);
@@ -294,7 +294,7 @@ router.map(function(){
 						host: HOST,
 						path: path
 					});
-					request.setTimeout(25000, function(){
+					request.setTimeout(20000, function(){
 						request.abort();
 						delete REQUESTS[path];
 						errorRespond(res, {timeout: true}, callback);
@@ -434,7 +434,7 @@ router.map(function(){
 						host: HOST,
 						path: path
 					});
-					request.setTimeout(25000, function(){
+					request.setTimeout(20000, function(){
 						request.abort();
 						delete REQUESTS[path];
 						errorRespond(res, {timeout: true}, callback);
@@ -513,7 +513,7 @@ router.map(function(){
 						host: HOST,
 						path: path
 					});
-					request.setTimeout(25000, function(){
+					request.setTimeout(20000, function(){
 						request.abort();
 						delete REQUESTS[path];
 						errorRespond(res, {timeout: true}, callback);
