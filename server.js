@@ -26,7 +26,7 @@ var http = require('http'),
 	stringify = require('json-stringify-safe');
 
 var redisClient;
-var redisURL = nconf.get('REDISCLOUD_URL') || nconf.get('REDISTOGO_URL') || nconf.get('redis_url');
+var redisURL = nconf.get('redis_url');
 if (redisURL){
 	// http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
 	var url = require('url').parse(redisURL);
