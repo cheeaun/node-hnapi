@@ -143,6 +143,11 @@ router.map(function(){
 						host: HOST,
 						path: _path
 					});
+					request.setTimeout(25000, function(){
+						request.abort();
+						delete REQUESTS[_path];
+						errorRespond(res, {timeout: true}, callback);
+					});
 					REQUESTS[_path] = request;
 				}
 				request.on('response', function(r){
@@ -289,6 +294,11 @@ router.map(function(){
 						host: HOST,
 						path: path
 					});
+					request.setTimeout(25000, function(){
+						request.abort();
+						delete REQUESTS[path];
+						errorRespond(res, {timeout: true}, callback);
+					});
 					REQUESTS[path] = request;
 				}
 				request.on('response', function(r){
@@ -424,6 +434,11 @@ router.map(function(){
 						host: HOST,
 						path: path
 					});
+					request.setTimeout(25000, function(){
+						request.abort();
+						delete REQUESTS[path];
+						errorRespond(res, {timeout: true}, callback);
+					});
 					REQUESTS[path] = request;
 				}
 				request.on('response', function(r){
@@ -497,6 +512,11 @@ router.map(function(){
 					request = https.get({
 						host: HOST,
 						path: path
+					});
+					request.setTimeout(25000, function(){
+						request.abort();
+						delete REQUESTS[path];
+						errorRespond(res, {timeout: true}, callback);
 					});
 					REQUESTS[path] = request;
 				}
