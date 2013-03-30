@@ -15,7 +15,7 @@ if (nodeflyKey){
 }
 
 var http = require('http'),
-  https = require('https'),
+	https = require('https'),
 	journey = require('journey'),
 	domino = require('domino'),
 	fs = require('fs'),
@@ -23,7 +23,20 @@ var http = require('http'),
 	zlib = require('zlib'),
 	redis = require('redis'),
 	memory = require('memory-cache'),
-	stringify = require('json-stringify-safe');
+	stringify = require('json-stringify-safe'),
+	winston = require('winston');
+
+if (nconf.get('loggly')){
+	require('winston-loggly');
+	winston.add(winston.transports.Loggly, {
+		subdomain: nconf.get('loggly:subdomain'),
+		auth: {
+			username: nconf.get('loggly:username'),
+			password: nconf.get('loggly:password')
+		},
+		inputToken: nconf.get('loggly:inputtoken')
+	});
+}
 
 var redisClient;
 var redisURL = nconf.get('redis_url');
@@ -36,11 +49,11 @@ if (redisURL){
 	redisClient = redis.createClient(null, null);
 }
 redisClient.on('connect', function(){
-	console.log('Connected to Redis server.');
+	winston.info('Connected to Redis server.');
 	memory.clear(); // Clear in-memory cache when Redis server is up
 });
 redisClient.on('error', function(){
-	console.error('Unable to connect to Redis server. Fallback to in-memory cache.');
+	winston.error('Unable to connect to Redis server. Fallback to in-memory cache.');
 });
 
 var cache = {
@@ -95,7 +108,7 @@ var errorRespond = function(response, error, callback){
 		body: errorJSON,
 		headers: response.baseResponse.headers
 	});
-	console.error(error);
+	winston.error(error);
 	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
 		process.exit(1);
 	});
@@ -138,7 +151,7 @@ router.map(function(){
 				var _path = (path == 'news') ? '' : ('/' + path);
 				var request = REQUESTS[_path];
 				if (!request){
-					console.log('Fetching ' + HOST + _path);
+					winston.info('Fetching ' + HOST + _path);
 					request = https.get({
 						host: HOST,
 						path: _path
@@ -289,7 +302,7 @@ router.map(function(){
 				var path = '/item?id=' + postID;
 				var request = REQUESTS[path];
 				if (!request){
-					console.log('Fetching ' + HOST + path);
+					winston.info('Fetching ' + HOST + path);
 					request = https.get({
 						host: HOST,
 						path: path
@@ -429,7 +442,7 @@ router.map(function(){
 				var path = '/x?fnid=' + commentID;
 				var request = REQUESTS[path];
 				if (!request){
-					console.log('Fetching ' + HOST + path);
+					winston.info('Fetching ' + HOST + path);
 					request = https.get({
 						host: HOST,
 						path: path
@@ -508,7 +521,7 @@ router.map(function(){
 				var path = '/user?id=' + userID;
 				var request = REQUESTS[path];
 				if (!request){
-					console.log('Fetching ' + HOST + path);
+					winston.info('Fetching ' + HOST + path);
 					request = https.get({
 						host: HOST,
 						path: path
@@ -567,6 +580,10 @@ http.createServer(function (request, response) {
 	var body = '';
 	request.on('data', function (chunk){ body += chunk });
 	request.on('end', function (){
+		winston.info('path=' + request.url
+			+ ' method=' + request.method
+			+ ' ip=' + (request.headers['x-forwarded-for'] || request.connection.remoteAddress || '')
+			+ ' user-agent=' + (request.headers['user-agent'] || ''));
 		router.handle(request, body, function (result){
 			var headers = result.headers;
 			headers['Access-Control-Allow-Origin'] = '*';

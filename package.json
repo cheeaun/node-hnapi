@@ -12,7 +12,9 @@
     "memory-cache": "0.0.5",
     "nconf": "0.6.x",
     "nodefly": "stable",
-    "json-stringify-safe": "4.0.x"
+    "json-stringify-safe": "4.0.x",
+    "winston": "0.6.x",
+    "winston-loggly": "0.6.x"
   },
   "subdomain": "node-hnapi",
   "scripts": {
