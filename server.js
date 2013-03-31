@@ -38,6 +38,12 @@ if (nconf.get('loggly')){
 	});
 }
 
+var papertrailOptions = nconf.get('papertrail');
+if (papertrailOptions){
+	require('winston-papertrail');
+	winston.add(winston.transports.Papertrail, papertrailOptions);
+}
+
 var redisClient;
 var redisURL = nconf.get('redis_url');
 if (redisURL){
