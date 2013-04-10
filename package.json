@@ -14,7 +14,6 @@
     "nodefly": "stable",
     "json-stringify-safe": "4.0.x",
     "winston": "0.6.x",
-    "winston-loggly": "0.6.x",
     "winston-papertrail": "~0.0.6"
   },
   "subdomain": "node-hnapi",

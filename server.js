@@ -26,18 +26,6 @@ var http = require('http'),
 	stringify = require('json-stringify-safe'),
 	winston = require('winston');
 
-if (nconf.get('loggly')){
-	require('winston-loggly');
-	winston.add(winston.transports.Loggly, {
-		subdomain: nconf.get('loggly:subdomain'),
-		auth: {
-			username: nconf.get('loggly:username'),
-			password: nconf.get('loggly:password')
-		},
-		inputToken: nconf.get('loggly:inputtoken')
-	});
-}
-
 var papertrailOptions = nconf.get('papertrail');
 if (papertrailOptions){
 	require('winston-papertrail');
