@@ -596,4 +596,4 @@ http.createServer(function (request, response) {
 			}
 		});
 	});
-}).listen(nconf.get('PORT') || nconf.get('app_port') || nconf.get('port')); // Port number for Heroku, Nodester & default
+}).listen(nconf.get('PORT') || nconf.get('port'));
