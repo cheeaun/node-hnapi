@@ -77,7 +77,7 @@ var cache = {
 	}
 };
 
-var router = new(journey.Router);
+var router = new journey.Router();
 
 var HOST = 'news.ycombinator.com';
 var CACHE_EXP = nconf.get('cache_exp');
@@ -166,7 +166,7 @@ router.map(function(){
 					}
 
 					var body = '';
-					r.on('data', function (chunk){ body += chunk });
+					r.on('data', function (chunk){ body += chunk; });
 					r.on('end', function(){
 						var window = domino.createWindow(body);
 						window._run(jquery);
