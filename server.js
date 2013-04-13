@@ -574,11 +574,22 @@ http.createServer(function (request, response) {
 	var body = '';
 	request.on('data', function (chunk){ body += chunk });
 	request.on('end', function (){
+
 		winston.info('path=' + request.url
 			+ ' method=' + request.method
 			+ ' ip=' + (request.headers['x-forwarded-for'] || request.connection.remoteAddress || '')
 			+ ' user-agent=' + (request.headers['user-agent'] || ''));
+
+		// Server response timeout
+		var timeout = setTimeout(function(){
+			response.writeHead(504);
+			response.end();
+			winston.error('Server timeout: ' + request.url);
+		}, 25000);
+
 		router.handle(request, body, function (result){
+			clearTimeout(timeout);
+
 			var headers = result.headers;
 			headers['Access-Control-Allow-Origin'] = '*';
 			headers['Vary'] = 'Accept-Encoding';
