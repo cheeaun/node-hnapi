@@ -32,6 +32,8 @@ if (papertrailOptions){
 	winston.add(winston.transports.Papertrail, papertrailOptions);
 }
 
+if (nconf.get('redis_debug')) redis.debug_mode = true;
+
 var redisClient;
 var redisURL = nconf.get('redis_url');
 if (redisURL){
