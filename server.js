@@ -46,7 +46,8 @@ redisClient.on('connect', function(){
 	winston.info('Connected to Redis server.');
 	memory.clear(); // Clear in-memory cache when Redis server is up
 });
-redisClient.on('error', function(){
+redisClient.on('error', function(e){
+	if (e) winston.error(e);
 	winston.error('Unable to connect to Redis server. Fallback to in-memory cache.');
 });
 
