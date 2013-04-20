@@ -636,9 +636,11 @@ http.createServer(function (request, response) {
 	request.on('data', function (chunk){ body += chunk });
 	request.on('end', function (){
 
+		var referer = request.headers['referer'];
 		winston.info('path=' + request.url
 			+ ' method=' + request.method
 			+ ' ip=' + (request.headers['x-forwarded-for'] || request.connection.remoteAddress || '')
+			+ (referer ? (' referer=' + referer) : '')
 			+ ' user-agent=' + (request.headers['user-agent'] || ''));
 
 		// Server response timeout
