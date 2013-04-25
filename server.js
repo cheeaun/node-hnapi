@@ -229,6 +229,59 @@ router.map(function(){
 			}
 		});
 	});
+
+	this.get(/^(newcomments)$/).bind(function (req, res, path, params){
+		var callback = params.callback;
+		cache.get(path, function(err, result){
+			if (result){
+				if (callback) result = callback + '(' + result + ')';
+				res.sendBody(result);
+			} else {
+				var _path = '/' + path;
+				var request = REQUESTS[_path];
+				if (!request){
+					winston.info('Fetching ' + HOST + _path);
+					request = https.get({
+						host: HOST,
+						path: _path
+					});
+					request.setTimeout(10000, function(){
+						request.abort();
+						delete REQUESTS[_path];
+						errorRespond(res, {timeout: true}, callback);
+					});
+					REQUESTS[_path] = request;
+				}
+				request.on('response', function(r){
+					delete REQUESTS[_path];
+
+					if (r.statusCode != 200){
+						errorRespond(res, {statusCode: r.statusCode}, callback);
+						return;
+					}
+
+					var body = '';
+					r.on('data', function (chunk){ body += chunk; });
+					r.on('end', function(){
+						var window = domino.createWindow(body);
+						window._run(jquery);
+						var $ = window.$;
+
+						var comments = [],
+							commentRows = $('tr:nth-child(3) tr:has(span.comment)');
+						comments = processComments(commentRows, $);
+
+						var commentsJSON = JSON.stringify(comments);
+						cache.set(path, commentsJSON, CACHE_EXP);
+						if (callback) commentsJSON = callback + '(' + commentsJSON + ')';
+						res.sendBody(commentsJSON);
+					});
+				}).on('error', function(e){
+					errorRespond(res, e, callback);
+				});
+			}
+		});
+	});
 	
 	var processComments = function(rows, $){
 		var comments = [];
@@ -237,12 +290,16 @@ router.map(function(){
 		for (var i=0, l=rows.length; i<l; i++){
 			var row = $(rows[i]),
 				comment = {},
-				level = parseInt(row.find('img[src*="s.gif"]').attr('width'), 10) / 40,
+				level = 0,
+				levelRow = row.find('img[src*="s.gif"]'),
 				metadata = row.find('.comhead').has('a'),
 				user = '',
 				timeAgo = '',
 				id = '',
 				content = '[deleted]';
+			if (levelRow.length){
+				level = parseInt((levelRow).attr('width'), 10) / 40;
+			}
 			if (metadata.length){
 				var userLink = metadata.find('a[href^=user]');
 				user = userLink.text();
@@ -270,6 +327,7 @@ router.map(function(){
 				comments: []
 			});
 		}
+
 		// Comments are not nested yet, this 2nd loop will nest 'em up
 		for (var i=0, l=comments.length; i<l; i++){
 			var comment = comments[i],
