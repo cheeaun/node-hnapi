@@ -13,7 +13,7 @@
     "nconf": "0.6.x",
     "nodefly": "stable",
     "json-stringify-safe": "4.0.x",
-    "winston": "0.6.x",
+    "winston": "0.7.x",
     "winston-papertrail": "0.1.x"
   },
   "subdomain": "node-hnapi",
