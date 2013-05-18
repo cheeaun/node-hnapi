@@ -34,6 +34,7 @@ var winston = require('winston');
 var papertrailOptions = nconf.get('papertrail');
 if (papertrailOptions){
 	require('winston-papertrail');
+	papertrailOptions.handleExceptions = true;
 	winston.add(winston.transports.Papertrail, papertrailOptions);
 }
 
