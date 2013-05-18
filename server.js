@@ -164,7 +164,7 @@ var errorRespond = function(res, error){
 	var errorJSON = {
 		error: error
 	};
-	res.status(500).jsonp(errorJSON);
+	res.jsonp(500, errorJSON);
 	winston.error(error);
 	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
 		process.exit(1);
@@ -490,7 +490,7 @@ app.get(/^\/comments\/(\w+)$/, function(req, res){
 				}
 				// Link has expired. Classic HN error message.
 				if (!/[<>]/.test(body) && /expired/i.test(body)){
-					res.status(410).jsonp({
+					res.jsonp(410, {
 						error: true,
 						message: body
 					});
