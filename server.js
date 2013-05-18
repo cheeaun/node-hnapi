@@ -24,6 +24,7 @@ var https = require('https');
 var domino = require('domino');
 var fs = require('fs');
 var jquery = fs.readFileSync(__dirname + '/jquery.min.js').toString();
+var zlib = require('zlib');
 var redis = require('redis');
 var memory = require('memory-cache');
 var winston = require('winston');
@@ -179,12 +180,17 @@ var cleanContent = function(html){
 };
 
 var request = function(path, fn){
+	var start;
 	var req = REQUESTS[path];
 	if (!req){
 		winston.info('Fetching ' + HOST + path);
+		start = new Date;
 		req = https.get({
 			host: HOST,
-			path: path
+			path: path,
+			headers: {
+				'Accept-Encoding': 'gzip'
+			}
 		});
 		req.setTimeout(10000, function(){
 			req.abort();
@@ -202,13 +208,26 @@ var request = function(path, fn){
 		}
 
 		var body = '';
-		r.on('data', function(chunk){ body += chunk; });
-		r.on('end', function(){
-			fn(null, body);
-		});
-	}).on('error', function(e){
-		fn(e);
-	});
+
+		var contentEncoding = r.headers['content-encoding'];
+		if (contentEncoding && contentEncoding.toLowerCase().indexOf('gzip') > -1){
+			var gunzip = zlib.createGunzip();
+			gunzip.on('data', function(data){
+				body += data.toString();
+			}).on('end', function(){
+				if (start) winston.info('Fetch duration time for ' + HOST + path + ' (gzip): ' + (new Date - start) + 'ms');
+				fn(null, body);
+			}).on('error', fn);
+			r.pipe(gunzip);
+		} else {
+			r.on('data', function(chunk){
+				body += chunk;
+			}).on('end', function(){
+				if (start) winston.info('Fetch duration time for ' + HOST + path + ': ' + (new Date - start) + 'ms');
+				fn(null, body);
+			}).on('error', fn);
+		}
+	}).on('error', fn).end();
 };
 
 app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res){
