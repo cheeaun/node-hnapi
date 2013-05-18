@@ -111,7 +111,7 @@ app.use(express.logger({
 			winston.info(message);
 		}
 	},
-	format: 'path=:url method=:method status=:status ip=:ip service-ms=:response-time'
+	format: 'path=:url method=:method status=:status ip=:ip response-ms=:response-time'
 		+ (log_referer ? ' referer=:referrer' : '')
 		+ ' user-agent=:user-agent'
 }));
