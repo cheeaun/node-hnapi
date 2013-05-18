@@ -147,6 +147,10 @@ app.get('/', function(req, res){
 	}, null, 4));
 });
 
+app.get('/favicon.ico', function(req, res){
+	res.send(204);
+});
+
 app.get('/robots.txt', function(req, res){
 	res.type('txt/plain');
 	res.send('User-agent: *\nDisallow: /');
