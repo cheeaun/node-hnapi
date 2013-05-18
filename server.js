@@ -76,9 +76,11 @@ var cache = {
 			value = JSON.stringify(value);
 		}
 		if (redisClient.connected){
-			redisClient.set(key, value, function(){
-				if (expiry) redisClient.expire(key, expiry); // seconds
-			});
+			if (expiry){
+				redisClient.setex(key, expiry, value);
+			} else {
+				redisClient.set(key, value);
+			}
 		} else {
 			memory.put(key, value, expiry ? expiry*1000 : null); // miliseconds
 		}
