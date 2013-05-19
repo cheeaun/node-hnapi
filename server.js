@@ -175,7 +175,7 @@ var request = function(path, fn){
 	var req = REQUESTS[path];
 	if (!req){
 		winston.info('Fetching ' + HOST + path);
-		start = new Date;
+		start = new Date();
 		req = https.get({
 			host: HOST,
 			path: path,
@@ -206,7 +206,7 @@ var request = function(path, fn){
 			gunzip.on('data', function(data){
 				body += data.toString();
 			}).on('end', function(){
-				if (start) winston.info('Fetch duration time for ' + HOST + path + ' (gzip): ' + (new Date - start) + 'ms');
+				if (start) winston.info('Fetch duration time for ' + HOST + path + ' (gzip): ' + (new Date() - start) + 'ms');
 				fn(null, body);
 			}).on('error', fn);
 			r.pipe(gunzip);
@@ -214,7 +214,7 @@ var request = function(path, fn){
 			r.on('data', function(chunk){
 				body += chunk;
 			}).on('end', function(){
-				if (start) winston.info('Fetch duration time for ' + HOST + path + ': ' + (new Date - start) + 'ms');
+				if (start) winston.info('Fetch duration time for ' + HOST + path + ': ' + (new Date() - start) + 'ms');
 				fn(null, body);
 			}).on('error', fn);
 		}
