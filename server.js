@@ -110,7 +110,7 @@ express.logger.token('ip', function(req, res){
 app.use(express.logger({
 	stream: {
 		write: function(message){
-			winston.info(message);
+			winston.info(message.trim()); // Chomp the newline appended by Logger
 		}
 	},
 	format: 'path=:url method=:method status=:status ip=:ip response-ms=:response-time'
