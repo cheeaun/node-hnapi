@@ -12,7 +12,7 @@
     "memory-cache": "0.0.5",
     "nconf": "0.6.x",
     "nodefly": "stable",
-    "winston": "0.7.x",
+    "winston": "git://github.com/flatiron/winston.git#6cf229d0d691d0e489057c8c1d521b44de97da4f",
     "winston-papertrail": "0.1.x",
     "cors": "1.0.x"
   },
