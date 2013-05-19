@@ -317,8 +317,8 @@ app.get('/newcomments', function(req, res){
 						errorRespond(res, e);
 						return;
 					}
-					cache.set(cacheKey, body, CACHE_EXP);
-					res.jsonp(body);
+					cache.set(cacheKey, data, CACHE_EXP);
+					res.jsonp(data);
 				});
 			});
 		}
