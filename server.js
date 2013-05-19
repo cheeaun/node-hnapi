@@ -232,9 +232,14 @@ app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res
 					errorRespond(res, err);
 					return;
 				}
-				var data = hndom.stories(body);
-				cache.set(cacheKey, data, CACHE_EXP);
-				res.jsonp(data);
+				hndom.stories(body, function(e, data){
+					if (e){
+						errorRespond(res, e);
+						return;
+					}
+					cache.set(cacheKey, data, CACHE_EXP);
+					res.jsonp(data);
+				});
 			});
 
 			// If 'news' expired, 'news2' should expire too
@@ -256,9 +261,14 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				var data = hndom.comments(body);
-				cache.set(cacheKey, data, CACHE_EXP);
-				res.jsonp(data);
+				hndom.comments(body, function(e, data){
+					if (e){
+						errorRespond(res, e);
+						return;
+					}
+					cache.set(cacheKey, data, CACHE_EXP);
+					res.jsonp(data);
+				});
 			});
 		}
 	});
@@ -277,18 +287,14 @@ app.get(/^\/comments\/(\w+)$/, function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				// Link has expired. Classic HN error message.
-				if (!/[<>]/.test(body) && /expired/i.test(body)){
-					res.jsonp(410, {
-						error: true,
-						message: body
-					});
-					return;
-				}
-
-				var data = hndom.comments(body);
-				cache.set(cacheKey, data, CACHE_EXP);
-				res.jsonp(data);
+				hndom.comments(body, function(e, data){
+					if (e){
+						errorRespond(res, e);
+						return;
+					}
+					cache.set(cacheKey, data, CACHE_EXP);
+					res.jsonp(data);
+				});
 			});
 		}
 	});
@@ -306,9 +312,14 @@ app.get('/newcomments', function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				var data = hndom.newComments(body);
-				cache.set(cacheKey, body, CACHE_EXP);
-				res.jsonp(body);
+				hndom.newComments(body, function(e, data){
+					if (e){
+						errorRespond(res, e);
+						return;
+					}
+					cache.set(cacheKey, body, CACHE_EXP);
+					res.jsonp(body);
+				});
 			});
 		}
 	});
@@ -327,9 +338,14 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				var data = hndom.user(body);
-				cache.set(cacheKey, data, CACHE_EXP);
-				res.jsonp(data);
+				hndom.user(body, function(e, data){
+					if (e){
+						errorRespond(res, e);
+						return;
+					}
+					cache.set(cacheKey, data, CACHE_EXP);
+					res.jsonp(data);
+				});
 			});
 		}
 	});
