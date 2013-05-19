@@ -159,6 +159,7 @@ app.get('/robots.txt', function(req, res){
 });
 
 var errorRespond = function(res, error){
+	if (error.toString) error = error.toString();
 	var errorJSON = {
 		error: error
 	};
