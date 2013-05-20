@@ -14,7 +14,8 @@
     "nodefly": "stable",
     "winston": "0.6.x",
     "winston-papertrail": "0.1.x",
-    "cors": "1.0.x"
+    "cors": "1.0.x",
+    "json-stringify-safe": "4.0.x"
   },
   "subdomain": "node-hnapi",
   "scripts": {

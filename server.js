@@ -26,6 +26,7 @@ var zlib = require('zlib');
 var redis = require('redis');
 var memory = require('memory-cache');
 var winston = require('winston');
+var stringify = require('json-stringify-safe');
 
 // Papertrail
 
@@ -159,12 +160,11 @@ app.get('/robots.txt', function(req, res){
 });
 
 var errorRespond = function(res, error){
-	if (error.toString) error = error.toString();
-	var errorJSON = {
-		error: error
-	};
-	res.jsonp(500, errorJSON);
-	winston.error(error);
+	var errorStr = stringify(error);
+	res.jsonp({
+		error: JSON.parse(errorStr)
+	});
+	winston.error(errorStr);
 	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
 		process.exit(1);
 	});
