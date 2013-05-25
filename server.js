@@ -126,8 +126,8 @@ app.use(cors());
 app.use(express.compress());
 app.use(function(req, res, next){
 	var timeout = setTimeout(function(){
-		res.send(504);
 		winston.error('Server timeout: ' + req.url);
+		res.send(504);
 	}, 25000);
 	res.on('header', function(){
 		clearTimeout(timeout);
