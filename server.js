@@ -160,11 +160,10 @@ app.get('/robots.txt', function(req, res){
 });
 
 var errorRespond = function(res, error){
-	var errorStr = stringify(error);
+	winston.error(error);
 	res.jsonp({
-		error: JSON.parse(errorStr)
+		error: error.message || JSON.parse(stringify(errorStr))
 	});
-	winston.error(errorStr);
 	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
 		process.exit(1);
 	});
