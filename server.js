@@ -163,7 +163,7 @@ var errorRespond = function(res, error){
 	winston.error(error);
 	if (!res.headersSent){
 		res.jsonp({
-			error: error.message || JSON.parse(stringify(errorStr))
+			error: error.message || JSON.parse(stringify(error))
 		});
 	}
 	if (error.code == 'ECONNRESET' || error.code == 'ECONNREFUSED' || error.statusCode == 503) process.nextTick(function(){
