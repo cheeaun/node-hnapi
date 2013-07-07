@@ -6,16 +6,16 @@
     "npm": "1.2.x"
   },
   "dependencies": {
-    "express": "3.2.x",
+    "express": "3.3.x",
     "domino": "1.0.x",
     "redis": "0.8.x",
     "memory-cache": "0.0.5",
     "nconf": "0.6.x",
     "nodefly": "stable",
-    "winston": "0.6.x",
+    "winston": "~0.7.2",
     "winston-papertrail": "0.1.x",
     "cors": "1.0.x",
-    "json-stringify-safe": "4.0.x"
+    "json-stringify-safe": "5.0.x"
   },
   "subdomain": "node-hnapi",
   "scripts": {
