@@ -13,7 +13,7 @@
     "nconf": "0.6.x",
     "nodefly": "stable",
     "winston": "~0.7.2",
-    "winston-papertrail": "0.1.x",
+    "winston-papertrail": "~0.1.4",
     "cors": "1.0.x",
     "json-stringify-safe": "5.0.x"
   },
