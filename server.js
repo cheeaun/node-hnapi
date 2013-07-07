@@ -187,7 +187,6 @@ var request = function(path, fn){
 		req.setTimeout(10000, function(){
 			req.abort();
 			delete REQUESTS[path];
-			fn({timeout: true});
 		});
 		REQUESTS[path] = req;
 	}
