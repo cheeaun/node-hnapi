@@ -64,7 +64,11 @@ var cache = {
 	get: function(key, fn){
 		if (redisClient.connected){
 			redisClient.get(key, function(err, value){
-				fn(err, JSON.parse(value));
+				try{
+					fn(err, JSON.parse(value));
+				} catch (e){
+					fn(e);
+				}
 			});
 		} else {
 			var value = memory.get(key);
