@@ -129,6 +129,13 @@ app.use(function(req, res, next){
 app.use(cors());
 app.use(express.compress());
 app.use(function(req, res, next){
+	['send', 'set'].forEach(function(method){
+		var fn = res[method];
+		res[method] = function(){
+			if (res.headerSent) return;
+			fn.apply(res, arguments);
+		}
+	});
 	var timeout = setTimeout(function(){
 		winston.error('Server timeout: ' + req.url);
 		res.send(504);
@@ -165,7 +172,7 @@ app.get('/robots.txt', function(req, res){
 
 var errorRespond = function(res, error){
 	winston.error(error);
-	if (!res.headersSent){
+	if (!res.headerSent){
 		res.jsonp({
 			error: error.message || JSON.parse(stringify(error))
 		});
