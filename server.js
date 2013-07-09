@@ -10,14 +10,6 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
-// Nodefly
-
-var nodeflyKey = nconf.get('nodefly_key');
-if (nodeflyKey){
-	var nodefly = require('nodefly');
-	nodefly.profile(nodeflyKey, ['node-hnapi', nconf.get('nodefly_hostname') || require('os').hostname()]);
-}
-
 var express = require('express');
 var cors = require('cors');
 var https = require('https');
