@@ -139,7 +139,8 @@ app.use(function(req, res, next){
 });
 
 app.get('/', function(req, res){
-	res.type('application/json').send(JSON.stringify({
+	res.type('application/json')
+	res.send(JSON.stringify({
 		name: 'node-hnapi',
 		desc: 'Unofficial Hacker News API',
 		version: '0.2',
