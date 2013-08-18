@@ -1,5 +1,8 @@
 {
 	"port": 80,
 	"redis_url": "redis://USERNAME:PASSWORD@127.0.0.1:6379/",
-	"cache_exp": 600
+	"cache_exp": 600,
+	"universal_analytics": {
+		"tid": "UA-TRACKINGID"
+	}
 }
