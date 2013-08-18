@@ -96,6 +96,7 @@ var HOST = 'news.ycombinator.com';
 var CACHE_EXP = nconf.get('cache_exp');
 var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 var log_referer = nconf.get('log_referer');
+var log_useragent = nconf.get('log_useragent');
 
 var app = express();
 app.set('json spaces', 0);
@@ -113,7 +114,7 @@ app.use(express.logger({
 	},
 	format: 'path=:url status=:status ip=:ip resp-ms=:response-time'
 		+ (log_referer ? ' referer=:referrer' : '')
-		+ ' ua=:user-agent'
+		+ (log_useragent ? ' ua=:user-agent' : '')
 }));
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
