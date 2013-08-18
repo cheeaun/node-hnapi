@@ -111,9 +111,9 @@ app.use(express.logger({
 			winston.info(message.trim()); // Chomp the newline appended by Logger
 		}
 	},
-	format: 'path=:url method=:method status=:status ip=:ip response-ms=:response-time'
+	format: 'path=:url status=:status ip=:ip resp-ms=:response-time'
 		+ (log_referer ? ' referer=:referrer' : '')
-		+ ' user-agent=:user-agent'
+		+ ' ua=:user-agent'
 }));
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
@@ -197,7 +197,7 @@ var request = function(path, fn){
 	var start;
 	var req = REQUESTS[path];
 	if (!req){
-		winston.info('Fetching ' + HOST + path);
+		winston.info('Fetching ' + path);
 		start = new Date();
 		req = https.get({
 			host: HOST,
@@ -219,7 +219,7 @@ var request = function(path, fn){
 		var time = new Date() - start;
 		var gzipStr = options.isGzip ? ' (gzip)' : '';
 		var gzipLabel = options.isGzip ? 'gzip' : 'non-gzip';
-		winston.info('Fetch duration time for ' + HOST + path + gzipStr + ': ' + time + 'ms');
+		winston.info('Fetch duration ' + path + gzipStr + ': ' + time + 'ms');
 		if (tid){
 			var visitor = ua(tid);
 			visitor.timing('HN fetch', 'Fetch duration', time, gzipLabel).send();
