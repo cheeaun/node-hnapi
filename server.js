@@ -19,6 +19,7 @@ var redis = require('redis');
 var memory = require('memory-cache');
 var winston = require('winston');
 var stringify = require('json-stringify-safe');
+var ua = require('universal-analytics');
 
 // Papertrail
 
@@ -114,6 +115,23 @@ app.use(express.logger({
 		+ (log_referer ? ' referer=:referrer' : '')
 		+ ' user-agent=:user-agent'
 }));
+if (nconf.get('universal_analytics')){
+	app.use(function(req, res, next){
+		var tid = nconf.get('universal_analytics:tid');
+		var visitor = ua(tid, {
+			headers: {
+				'User-Agent': req.headers['user-agent']
+			}
+		});
+		visitor.pageview({
+			dp: req.originalUrl || req.url,
+			dr: req.headers['referer'] || req.headers['referrer']
+		}, function(e){
+			if (e) winston.error(e);
+		}).send();
+		next();
+	});
+}
 app.use(function(req, res, next){
 	res.setHeader('Cache-Control', 'public, max-age=' + CACHE_EXP);
 	next();
@@ -194,6 +212,19 @@ var request = function(path, fn){
 		});
 		REQUESTS[path] = req;
 	}
+	var tid = nconf.get('universal_analytics:tid');
+	var trackTiming = function(options){
+		if (!start) return;
+		if (!options) options = {};
+		var time = new Date() - start;
+		var gzipStr = options.isGzip ? ' (gzip)' : '';
+		var gzipLabel = options.isGzip ? 'gzip' : 'non-gzip';
+		winston.info('Fetch duration time for ' + HOST + path + gzipStr + ': ' + time + 'ms');
+		if (tid){
+			var visitor = ua(tid);
+			visitor.timing('HN fetch', 'Fetch duration', time, gzipLabel).send();
+		}
+	};
 	req.on('response', function(r){
 		delete REQUESTS[path];
 
@@ -210,7 +241,7 @@ var request = function(path, fn){
 			gunzip.on('data', function(data){
 				body += data.toString();
 			}).on('end', function(){
-				if (start) winston.info('Fetch duration time for ' + HOST + path + ' (gzip): ' + (new Date() - start) + 'ms');
+				trackTiming({isGzip: true});
 				fn(null, body);
 			}).on('error', fn);
 			r.pipe(gunzip);
@@ -218,7 +249,7 @@ var request = function(path, fn){
 			r.on('data', function(chunk){
 				body += chunk;
 			}).on('end', function(){
-				if (start) winston.info('Fetch duration time for ' + HOST + path + ': ' + (new Date() - start) + 'ms');
+				trackTiming();
 				fn(null, body);
 			}).on('error', fn);
 		}
