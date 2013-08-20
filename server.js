@@ -140,7 +140,6 @@ if (nconf.get('universal_analytics')){
 			dr: req.headers['referer'] || req.headers['referrer'] || ''
 		}, function(e){
 			if (e) winston.error(e);
-			console.log('success')
 		}).send();
 		next();
 	});
