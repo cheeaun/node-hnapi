@@ -6,16 +6,16 @@
     "npm": "1.2.x"
   },
   "dependencies": {
-    "express": "3.3.x",
-    "domino": "1.0.x",
-    "redis": "0.8.x",
-    "memory-cache": "0.0.5",
-    "nconf": "0.6.x",
+    "express": "~3.3.5",
+    "domino": "~1.0.12",
+    "redis": "~0.8.4",
+    "memory-cache": "~0.0.5",
+    "nconf": "~0.6.7",
     "winston": "~0.7.2",
     "winston-papertrail": "~0.1.4",
-    "cors": "1.0.x",
-    "json-stringify-safe": "5.0.x",
-    "universal-analytics": "git+https://github.com/cheeaun/universal-analytics.git"
+    "cors": "~1.0.1",
+    "json-stringify-safe": "~5.0.0",
+    "universal-analytics": "~0.2.3"
   },
   "subdomain": "node-hnapi",
   "scripts": {
