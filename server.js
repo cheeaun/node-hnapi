@@ -125,11 +125,22 @@ if (nconf.get('universal_analytics')){
 		var visitor = ua(tid, {
 			headers: headers
 		});
+
+		req.__startTime = new Date;
+		var end = res.end;
+		res.end = function(chunk, encoding){
+			res.end = end;
+			res.end(chunk, encoding);
+			var time = new Date - req.__startTime;
+			visitor.timing('HN API', 'Response time', time).send();
+		}
+
 		visitor.pageview({
 			dp: req.originalUrl || req.url,
 			dr: req.headers['referer'] || req.headers['referrer'] || ''
 		}, function(e){
 			if (e) winston.error(e);
+			console.log('success')
 		}).send();
 		next();
 	});
