@@ -119,14 +119,15 @@ app.use(express.logger({
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
 		var tid = nconf.get('universal_analytics:tid');
+		var headers = {};
+		var userAgent = req.headers['user-agent'];
+		if (userAgent) headers['User-Agent'] = userAgent;
 		var visitor = ua(tid, {
-			headers: {
-				'User-Agent': req.headers['user-agent']
-			}
+			headers: headers
 		});
 		visitor.pageview({
 			dp: req.originalUrl || req.url,
-			dr: req.headers['referer'] || req.headers['referrer']
+			dr: req.headers['referer'] || req.headers['referrer'] || ''
 		}, function(e){
 			if (e) winston.error(e);
 		}).send();
