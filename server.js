@@ -102,9 +102,12 @@ var app = express();
 app.set('json spaces', 0);
 app.set('trust proxy', true);
 
-express.logger.token('ip', function(req, res){
+var reqIP = function(req){
 	var ips = req.ips;
-	return ips.length ? ips.join(',') : req.ip;
+	return ips.length ? ips.join(', ') : req.ip;
+};
+express.logger.token('ip', function(req, res){
+	return reqIP(req);
 });
 app.use(express.logger({
 	stream: {
@@ -205,18 +208,21 @@ var errorRespond = function(res, error){
 	});
 };
 
-var request = function(path, fn){
+var request = function(path, data, fn){
+	if (typeof data == 'function') fn = data;
 	var start;
 	var req = REQUESTS[path];
 	if (!req){
 		winston.info('Fetching ' + path);
 		start = new Date();
+		var headers = {
+			'Accept-Encoding': 'gzip',
+		};
+		if (data.ip) headers['X-Forwarded-For'] = data.ip;
 		req = https.get({
 			host: HOST,
 			path: path,
-			headers: {
-				'Accept-Encoding': 'gzip'
-			}
+			headers: headers
 		});
 		req.setTimeout(10000, function(){
 			req.abort();
@@ -275,7 +281,7 @@ app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res
 			res.jsonp(result);
 		} else {
 			var path = req.url;
-			request(path, function(err, body){
+			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -304,7 +310,7 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/item?id=' + postID;
-			request(path, function(err, body){
+			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -330,7 +336,7 @@ app.get(/^\/comments\/(\w+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/x?fnid=' + commentID;
-			request(path, function(err, body){
+			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -355,7 +361,7 @@ app.get('/newcomments', function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = req.url;
-			request(path, function(err, body){
+			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -381,7 +387,7 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/user?id=' + userID;
-			request(path, function(err, body){
+			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
