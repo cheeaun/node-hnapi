@@ -4,6 +4,10 @@
 	"cache_exp": 600,
 	"log_referer": false,
 	"log_useragent": false,
+	"papertrail": {
+		"host": "PAPERTRAIL_HOST",
+		"port": "PAPERTRAIL_PORT"
+	},
 	"universal_analytics": {
 		"tid": "UA-TRACKINGID"
 	}
