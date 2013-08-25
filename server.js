@@ -46,48 +46,52 @@ if (redisURL){
 }
 redisClient.on('connect', function(){
 	winston.info('Connected to Redis server.');
-	memory.clear(); // Clear in-memory cache when Redis server is up
 });
 redisClient.on('error', function(e){
 	if (e) winston.error(e.toString ? e.toString() : e);
-	winston.error('Unable to connect to Redis server. Fallback to in-memory cache.');
 });
 
 var cache = {
 	get: function(key, fn){
-		if (redisClient.connected){
-			redisClient.get(key, function(err, value){
+		var value = memory.get(key);
+		if (value){
+			fn(null, value);
+		} else if (redisClient.connected){
+			redisClient.get(key, function(err, strValue){
+				if (err){
+					fn(err);
+					return;
+				}
 				try{
-					fn(err, JSON.parse(value));
+					value = JSON.parse(strValue);
+					fn(null, value);
+					// Sync redis cache to in-memory cache
+					redisClient.ttl(key, function(e, ttl){
+						if (ttl) memory.put(key, value, ttl*1000);
+					});
 				} catch (e){
 					fn(e);
 				}
 			});
 		} else {
-			var value = memory.get(key);
-			value = JSON.parse(value);
-			fn(null, value);
+			fn();
 		}
 	},
 	set: function(key, value, expiry){
-		if (typeof value != 'string'){
-			value = JSON.stringify(value);
-		}
+		memory.put(key, value, expiry ? expiry*1000 : null); // miliseconds
 		if (redisClient.connected){
+			var strValue = JSON.stringify(value);
 			if (expiry){
-				redisClient.setex(key, expiry, value);
+				redisClient.setex(key, expiry, strValue);
 			} else {
-				redisClient.set(key, value);
+				redisClient.set(key, strValue);
 			}
-		} else {
-			memory.put(key, value, expiry ? expiry*1000 : null); // miliseconds
 		}
 	},
 	del: function(key){
+		memory.del(key);
 		if (redisClient.connected){
 			redisClient.del(key);
-		} else {
-			memory.del(key);
 		}
 	}
 };
@@ -236,7 +240,6 @@ var request = function(path, data, fn){
 		});
 		REQUESTS[path] = req;
 	}
-	var tid = nconf.get('universal_analytics:tid');
 	var trackTiming = function(options){
 		if (!start) return;
 		if (!options) options = {};
@@ -244,10 +247,7 @@ var request = function(path, data, fn){
 		var gzipStr = options.isGzip ? ' (gzip)' : '';
 		var gzipLabel = options.isGzip ? 'gzip' : 'non-gzip';
 		winston.info('Fetch duration ' + path + gzipStr + ': ' + time + 'ms');
-		if (tid){
-			var visitor = ua(tid);
-			visitor.timing('HN fetch', 'Fetch duration', time, gzipLabel).send();
-		}
+		visitor.timing('HN fetch', 'Fetch duration', time, gzipLabel).send();
 	};
 	req.on('response', function(r){
 		delete REQUESTS[path];
