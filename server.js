@@ -280,7 +280,7 @@ app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res
 		if (result){
 			res.jsonp(result);
 		} else {
-			var path = req.url;
+			var path = '/' + cacheKey;
 			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
@@ -360,7 +360,7 @@ app.get('/newcomments', function(req, res){
 		if (result){
 			res.jsonp(result);
 		} else {
-			var path = req.url;
+			var path = '/' + cacheKey;
 			request(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
