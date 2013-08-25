@@ -303,7 +303,7 @@ app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res
 			});
 
 			// If 'news' expired, 'news2' should expire too
-			if (path == 'news') cache.del('news2');
+			if (cacheKey == 'news') cache.del('news2');
 		}
 	});
 });
