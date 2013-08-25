@@ -212,8 +212,14 @@ var request = function(path, data, fn){
 	if (typeof data == 'function') fn = data;
 	var start;
 	var req = REQUESTS[path];
+
+	var tid = nconf.get('universal_analytics:tid');
+	var visitor = ua(tid);
+
 	if (!req){
 		winston.info('Fetching ' + path);
+		visitor.event('HN Fetch', 'Fetch start', path).send();
+
 		start = new Date();
 		var headers = {
 			'Accept-Encoding': 'gzip',
