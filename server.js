@@ -186,7 +186,8 @@ app.get('/', function(req, res){
 		author: 'cheeaun',
 		author_url: 'http://cheeaun.com/',
 		process: {
-			versions: process.versions
+			versions: process.versions,
+			memoryUsage: process.memoryUsage()
 		}
 	}, null, 4));
 });
