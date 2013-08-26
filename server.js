@@ -232,7 +232,8 @@ var request = function(path, data, fn){
 		req = https.get({
 			host: HOST,
 			path: path,
-			headers: headers
+			headers: headers,
+			agent: false
 		});
 		req.setTimeout(10000, function(){
 			req.abort();
