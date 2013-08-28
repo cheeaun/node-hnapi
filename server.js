@@ -101,6 +101,8 @@ var CACHE_EXP = nconf.get('cache_exp');
 var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 var log_referer = nconf.get('log_referer');
 var log_useragent = nconf.get('log_useragent');
+var ua_tid = nconf.get('universal_analytics:tid');
+var ua_hostname = nconf.get('universal_analytics:hostname');
 
 var app = express();
 app.set('json spaces', 0);
@@ -125,11 +127,10 @@ app.use(express.logger({
 }));
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
-		var tid = nconf.get('universal_analytics:tid');
 		var headers = {};
 		var userAgent = req.headers['user-agent'];
 		if (userAgent) headers['User-Agent'] = userAgent;
-		var visitor = ua(tid, {
+		var visitor = ua(ua_tid, {
 			headers: headers
 		});
 
@@ -142,10 +143,12 @@ if (nconf.get('universal_analytics')){
 			visitor.timing('HN API', 'Response time', time).send();
 		}
 
-		visitor.pageview({
+		var params = {
 			dp: req.originalUrl || req.url,
 			dr: req.headers['referer'] || req.headers['referrer'] || ''
-		}, function(e){
+		};
+		if (ua_hostname) params.dh = ua_hostname;
+		visitor.pageview(params, function(e){
 			if (e) winston.error(e);
 		}).send();
 		next();
@@ -218,8 +221,7 @@ var request = function(path, data, fn){
 	var start;
 	var req = REQUESTS[path];
 
-	var tid = nconf.get('universal_analytics:tid');
-	var visitor = ua(tid);
+	var visitor = ua(ua_tid);
 
 	if (!req){
 		winston.info('Fetching ' + path);
