@@ -21,7 +21,7 @@ var stringify = require('json-stringify-safe');
 var ua = require('universal-analytics');
 
 var HOST = 'news.ycombinator.com';
-var CACHE_EXP = nconf.get('cache_exp');
+var CACHE_EXP = parseInt(nconf.get('cache_exp'), 10);
 var log_referer = nconf.get('log_referer');
 var log_useragent = nconf.get('log_useragent');
 var ua_tid = nconf.get('universal_analytics:tid');
@@ -45,8 +45,10 @@ cacheOptions.onConnect = function(){
 cacheOptions.onError = function(e){
 	if (e) winston.error(e.toString ? e.toString() : e);
 };
+var cacheMemory = nconf.get('cache:memory');
+if (typeof cacheMemory == 'string') cacheMemory = cacheMemory == 'true';
 var cache = Cache({
-	memory: nconf.get('cache:memory'),
+	memory: cacheMemory,
 	expiry: CACHE_EXP,
 	store: nconf.get('cache:store'),
 	options: cacheOptions
