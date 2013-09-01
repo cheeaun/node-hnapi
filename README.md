@@ -37,6 +37,7 @@ HNapi uses [nconf](https://github.com/flatiron/nconf) for configuration, which c
 - `papertrail` - for logging with [Papertrail](http://papertrailapp.com/)
 	- `host`
 	- `port`
+	- `hostname` (optional) - host name for the server
 - `universal_analytics` - for logging with [Google Analytics' Universal Analytics' Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/)
 	- `tid` - tracking ID
 
