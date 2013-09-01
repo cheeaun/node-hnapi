@@ -1,14 +1,12 @@
 {
 	"port": 80,
-	"redis_url": "redis://USERNAME:PASSWORD@127.0.0.1:6379/",
 	"cache_exp": 600,
 	"log_referer": false,
 	"log_useragent": false,
+	"cache": {
+	},
 	"papertrail": {
-		"host": "PAPERTRAIL_HOST",
-		"port": "PAPERTRAIL_PORT"
 	},
 	"universal_analytics": {
-		"tid": "UA-TRACKINGID"
 	}
 }

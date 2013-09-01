@@ -18,7 +18,27 @@ Quick Start
 5. `node server.js`
 6. Load `localhost` in your web browser.
 
+Configuration
+-------------
+
 HNapi uses [nconf](https://github.com/flatiron/nconf) for configuration, which can be done via the `config.json` file, environment variables and command-line arguments.
+
+- `port` - (default: `80`) Server port
+- `cache_exp` - (default: `600`) Cache expiry in seconds
+- `log_referer` - (default: `false`) Logs referers
+- `log_useragent` - (default: `false`) Logs user-agent strings
+- `cache`
+	- `memory` - (default: `true`) Use in-memory caching
+	- `store` - (`memcached` | `redis`, default: none) Specify the cache store
+	- `options` - Options for specified cache store
+		- `servers` - `HOST:PORT` for memcached server
+		- `url` - `redis://USERNAME:PASSWORD@HOST:PORT` for redis server
+		- `debug` - (default: `false`) Allows debugging (only for redis store)
+- `papertrail` - for logging with [Papertrail](http://papertrailapp.com/)
+	- `host`
+	- `port`
+- `universal_analytics` - for logging with [Google Analytics' Universal Analytics' Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/)
+	- `tid` - tracking ID
 
 License
 -------
