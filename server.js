@@ -14,12 +14,18 @@ var express = require('express');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
+var Cache = require('./lib/cache.js');
 var zlib = require('zlib');
-var redis = require('redis');
-var memory = require('memory-cache');
 var winston = require('winston');
 var stringify = require('json-stringify-safe');
 var ua = require('universal-analytics');
+
+var HOST = 'news.ycombinator.com';
+var CACHE_EXP = nconf.get('cache_exp');
+var log_referer = nconf.get('log_referer');
+var log_useragent = nconf.get('log_useragent');
+var ua_tid = nconf.get('universal_analytics:tid');
+var ua_hostname = nconf.get('universal_analytics:hostname');
 
 // Papertrail
 
@@ -30,79 +36,21 @@ if (papertrailOptions){
 	winston.add(winston.transports.Papertrail, papertrailOptions);
 }
 
-// Redis + in-memory cache
+// Cache
 
-if (nconf.get('redis_debug')) redis.debug_mode = true;
-
-var redisClient;
-var redisURL = nconf.get('redis_url');
-if (redisURL){
-	// http://blog.jerodsanto.net/2011/06/connecting-node-js-to-redis-to-go-on-heroku/
-	var url = require('url').parse(redisURL);
-	redisClient = redis.createClient(url.port, url.hostname);
-	redisClient.auth(url.auth.split(':')[1]);
-} else {
-	redisClient = redis.createClient(null, null);
-}
-redisClient.on('connect', function(){
-	winston.info('Connected to Redis server.');
-});
-redisClient.on('error', function(e){
-	if (e) winston.error(e.toString ? e.toString() : e);
-});
-
-var cache = {
-	get: function(key, fn){
-		var value = memory.get(key);
-		if (value){
-			fn(null, value);
-		} else if (redisClient.connected){
-			redisClient.get(key, function(err, strValue){
-				if (err){
-					fn(err);
-					return;
-				}
-				try{
-					value = JSON.parse(strValue);
-					fn(null, value);
-					// Sync redis cache to in-memory cache
-					redisClient.ttl(key, function(e, ttl){
-						if (ttl) memory.put(key, value, ttl*1000);
-					});
-				} catch (e){
-					fn(e);
-				}
-			});
-		} else {
-			fn();
-		}
-	},
-	set: function(key, value, expiry){
-		memory.put(key, value, expiry ? expiry*1000 : null); // miliseconds
-		if (redisClient.connected){
-			var strValue = JSON.stringify(value);
-			if (expiry){
-				redisClient.setex(key, expiry, strValue);
-			} else {
-				redisClient.set(key, strValue);
-			}
-		}
-	},
-	del: function(key){
-		memory.del(key);
-		if (redisClient.connected){
-			redisClient.del(key);
-		}
-	}
+var cacheOptions = nconf.get('cache:options') || {};
+cacheOptions.onConnect = function(){
+	winston.info('Connected to cache server.');
 };
-
-var HOST = 'news.ycombinator.com';
-var CACHE_EXP = nconf.get('cache_exp');
-var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
-var log_referer = nconf.get('log_referer');
-var log_useragent = nconf.get('log_useragent');
-var ua_tid = nconf.get('universal_analytics:tid');
-var ua_hostname = nconf.get('universal_analytics:hostname');
+cacheOptions.onError = function(e){
+	if (e) winston.error(e.toString ? e.toString() : e);
+};
+var cache = Cache({
+	memory: nconf.get('cache:memory'),
+	expiry: CACHE_EXP,
+	store: nconf.get('cache:store'),
+	options: cacheOptions
+});
 
 var app = express();
 app.set('json spaces', 0);
@@ -216,6 +164,7 @@ var errorRespond = function(res, error){
 	});
 };
 
+var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
 var request = function(path, data, fn){
 	if (typeof data == 'function') fn = data;
 	var start;

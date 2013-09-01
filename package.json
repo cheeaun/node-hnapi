@@ -15,7 +15,8 @@
     "winston-papertrail": "~0.1.4",
     "cors": "~1.0.1",
     "json-stringify-safe": "~5.0.0",
-    "universal-analytics": "~0.2.3"
+    "universal-analytics": "~0.2.3",
+    "memcached": "~0.2.5"
   },
   "subdomain": "node-hnapi",
   "scripts": {
