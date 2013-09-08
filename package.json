@@ -6,7 +6,7 @@
     "npm": ">=1.2"
   },
   "dependencies": {
-    "express": "~3.3.5",
+    "express": "~3.3.8",
     "domino": "~1.0.12",
     "redis": "~0.8.4",
     "memory-cache": "~0.0.5",
