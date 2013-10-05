@@ -10,6 +10,7 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
+require('longjohn');
 var express = require('express');
 var cors = require('cors');
 var https = require('https');
