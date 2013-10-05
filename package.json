@@ -17,7 +17,8 @@
     "json-stringify-safe": "~5.0.0",
     "universal-analytics": "~0.3.0",
     "memcached": "~0.2.5",
-    "longjohn": "~0.2.1"
+    "longjohn": "~0.2.1",
+    "connect-ratelimit": "0.0.5"
   },
   "subdomain": "node-hnapi",
   "scripts": {

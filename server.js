@@ -105,6 +105,24 @@ if (nconf.get('universal_analytics')){
 		next();
 	});
 }
+
+var rateLimit = nconf.get('ratelimit');
+if (rateLimit && rateLimit.blacklist){
+	var limiter = require('connect-ratelimit');
+	var blacklist = rateLimit.blacklist.split(' ');
+	app.use(limiter({
+		blacklist: blacklist,
+		end: true,
+		catagories: {
+			blacklist: {
+				// 1 req every 30 secs
+				totalRequests: 1,
+				every: 30 * 1000
+			}
+		}
+	}));
+}
+
 app.use(function(req, res, next){
 	res.setHeader('Cache-Control', 'public, max-age=' + CACHE_EXP);
 	next();
