@@ -115,9 +115,9 @@ if (rateLimit && rateLimit.blacklist){
 		end: true,
 		catagories: {
 			blacklist: {
-				// 1 req every 30 secs
+				// 1 req every minute
 				totalRequests: 1,
-				every: 30 * 1000
+				every: 60 * 1000
 			}
 		}
 	}));
