@@ -20,6 +20,7 @@ var zlib = require('zlib');
 var winston = require('winston');
 var stringify = require('json-stringify-safe');
 var ua = require('universal-analytics');
+var TimeQueue = require('timequeue');
 
 var HOST = 'news.ycombinator.com';
 var CACHE_EXP = parseInt(nconf.get('cache_exp'), 10);
@@ -186,8 +187,11 @@ var errorRespond = function(res, error){
 };
 
 var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
-var request = function(path, data, fn){
-	if (typeof data == 'function') fn = data;
+var requestWorker = function(path, data, fn, done){
+	if (typeof data == 'function'){
+		done = fn;
+		fn = data;
+	}
 	var start;
 	var req = REQUESTS[path];
 
@@ -252,7 +256,17 @@ var request = function(path, data, fn){
 			}).on('error', fn);
 		}
 	}).on('error', fn).end();
+	done();
 };
+var request = new TimeQueue(requestWorker, {
+	// 1 fetch every sec
+	concurrency: 1,
+	every: 1000,
+	maxQueued: 1000
+});
+request.on('error', function(e){
+	if (e) winston.error(e);
+});
 
 app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
@@ -261,7 +275,7 @@ app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res
 			res.jsonp(result);
 		} else {
 			var path = '/' + cacheKey;
-			request(path, { ip: reqIP(req) }, function(err, body){
+			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -290,7 +304,7 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/item?id=' + postID;
-			request(path, { ip: reqIP(req) }, function(err, body){
+			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -316,7 +330,7 @@ app.get(/^\/comments\/(\w+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/x?fnid=' + commentID;
-			request(path, { ip: reqIP(req) }, function(err, body){
+			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -341,7 +355,7 @@ app.get('/newcomments', function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/' + cacheKey;
-			request(path, { ip: reqIP(req) }, function(err, body){
+			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
@@ -367,7 +381,7 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/user?id=' + userID;
-			request(path, { ip: reqIP(req) }, function(err, body){
+			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
 					return;
