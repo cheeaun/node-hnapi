@@ -199,7 +199,12 @@ var requestWorker = function(path, data, fn, done){
 
 	if (!req){
 		winston.info('Fetching ' + path);
-		visitor.event('HN Fetch', 'Fetch start', path).send();
+		visitor.event({
+			ec: 'HN Fetch', // Event Category
+			ea: 'Fetch start', // Event Action
+			el: path, // Event Label
+			dh: ua_hostname // Document hostname
+		}).send();
 
 		start = new Date();
 		var headers = {
