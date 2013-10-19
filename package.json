@@ -2,7 +2,7 @@
   "name": "node-hnapi",
   "version": "0.1.1",
   "engines": {
-    "node": "0.10.x || 0.8.x",
+    "node": "~0.10.21 || 0.8.x",
     "npm": ">=1.2"
   },
   "dependencies": {
