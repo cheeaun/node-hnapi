@@ -19,7 +19,8 @@
     "memcached": "~0.2.5",
     "longjohn": "~0.2.1",
     "connect-ratelimit": "0.0.5",
-    "timequeue": "~0.2.2"
+    "timequeue": "~0.2.2",
+    "newrelic": "~1.0.0"
   },
   "subdomain": "node-hnapi",
   "scripts": {

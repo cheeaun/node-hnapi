@@ -9,6 +9,7 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
+if (nconf.get('NEW_RELIC_LICENSE_KEY')) require('newrelic');
 require('longjohn');
 var express = require('express');
 var cors = require('cors');
