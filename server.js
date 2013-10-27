@@ -6,7 +6,6 @@ nconf.argv()
 	.file('config.json')
 	.defaults({
 		port: 80,
-		// redis_url: 'redis://USERNAME:PASSWORD@127.0.0.1:6379/',
 		cache_exp: 60*10 // 10 mins
 	});
 
