@@ -16,11 +16,11 @@
     "cors": "~2.1.0",
     "json-stringify-safe": "~5.0.0",
     "universal-analytics": "~0.3.0",
-    "memcached": "~0.2.5",
+    "memcached": "~0.2.6",
     "longjohn": "~0.2.2",
     "connect-ratelimit": "0.0.5",
     "timequeue": "~0.2.2",
-    "newrelic": "~1.0.0"
+    "newrelic": "~1.1.1"
   },
   "subdomain": "node-hnapi",
   "scripts": {
