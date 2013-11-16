@@ -236,7 +236,15 @@ var requestWorker = function(path, data, fn, done){
 		delete REQUESTS[path];
 
 		if (r.statusCode != 200){
-			fn({statusCode: r.statusCode});
+			var statusCode = r.statusCode;
+			visitor.event({
+				ec: 'HN Fetch', // Event Category
+				ea: 'Fetch status', // Event Action
+				el: statusCode, // Event Label
+				dh: ua_hostname // Document hostname
+			}, function(){
+				fn({statusCode: statusCode});
+			});
 			return;
 		}
 
