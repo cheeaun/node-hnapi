@@ -348,7 +348,7 @@ app.get(/^\/comments\/(\w+)$/, function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				hndom.comments(body, function(e, data){
+				hndom.moreComments(body, function(e, data){
 					if (e){
 						errorRespond(res, e);
 						return;
