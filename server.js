@@ -34,7 +34,7 @@ var ua_hostname = nconf.get('universal_analytics:hostname');
 var papertrailOptions = nconf.get('papertrail');
 if (papertrailOptions){
 	require('winston-papertrail');
-	papertrailOptions.handleExceptions = true;
+	// papertrailOptions.handleExceptions = true;
 	winston.add(winston.transports.Papertrail, papertrailOptions);
 }
 
