@@ -12,6 +12,7 @@ nconf.argv()
 require('longjohn');
 var express = require('express');
 var morgan = require('morgan');
+var compress = require('compression');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
@@ -130,7 +131,7 @@ app.use(function(req, res, next){
 	next();
 });
 app.use(cors());
-app.use(express.compress());
+app.use(compress());
 app.use(function(req, res, next){
 	['send', 'set'].forEach(function(method){
 		var fn = res[method];

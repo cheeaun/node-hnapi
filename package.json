@@ -20,7 +20,8 @@
     "longjohn": "~0.2.4",
     "connect-ratelimit": "0.0.6",
     "timequeue": "~0.2.2",
-    "morgan": "~1.1.1"
+    "morgan": "~1.1.1",
+    "compression": "~1.0.2"
   },
   "subdomain": "node-hnapi",
   "scripts": {
