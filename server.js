@@ -11,6 +11,7 @@ nconf.argv()
 
 require('longjohn');
 var express = require('express');
+var morgan = require('morgan');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
@@ -63,19 +64,20 @@ var reqIP = function(req){
 	var ips = req.ips;
 	return ips.length ? ips.join(', ') : req.ip;
 };
-express.logger.token('ip', function(req, res){
+morgan.token('ip', function(req, res){
 	return reqIP(req);
 });
-app.use(express.logger({
+app.use(morgan({
 	stream: {
 		write: function(message){
-			winston.info(message.trim()); // Chomp the newline appended by Logger
+			winston.info(message.trim());
 		}
 	},
 	format: 'path=:url status=:status ip=:ip resp-ms=:response-time'
 		+ (log_referer ? ' referer=:referrer' : '')
 		+ (log_useragent ? ' ua=:user-agent' : '')
 }));
+
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
 		var headers = {};
