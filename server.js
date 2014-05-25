@@ -13,6 +13,7 @@ require('longjohn');
 var express = require('express');
 var morgan = require('morgan');
 var compress = require('compression');
+var onHeaders = require('on-headers');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
@@ -144,7 +145,7 @@ app.use(function(req, res, next){
 		winston.error('Server timeout: ' + req.url);
 		res.send(504);
 	}, 25000);
-	res.on('headers', function(){
+	onHeaders(res, function(){
 		clearTimeout(timeout);
 	});
 	next();
