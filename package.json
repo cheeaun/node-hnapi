@@ -6,9 +6,9 @@
     "npm": ">=1.2"
   },
   "dependencies": {
-    "express": "~3.5.1",
+    "express": "~4.3.1",
     "domino": "~1.0.15",
-    "redis": "~0.10.1",
+    "redis": "~0.10.3",
     "memory-cache": "~0.0.5",
     "nconf": "~0.6.9",
     "winston": "~0.7.3",
@@ -17,10 +17,9 @@
     "json-stringify-safe": "~5.0.0",
     "universal-analytics": "~0.3.4",
     "memcached": "~0.2.8",
-    "longjohn": "~0.2.2",
+    "longjohn": "~0.2.4",
     "connect-ratelimit": "0.0.6",
-    "timequeue": "~0.2.2",
-    "newrelic": "~1.4.0"
+    "timequeue": "~0.2.2"
   },
   "subdomain": "node-hnapi",
   "scripts": {

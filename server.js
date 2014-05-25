@@ -9,7 +9,6 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
-if (nconf.get('NEW_RELIC_LICENSE_KEY')) require('newrelic');
 require('longjohn');
 var express = require('express');
 var cors = require('cors');
@@ -134,7 +133,7 @@ app.use(function(req, res, next){
 	['send', 'set'].forEach(function(method){
 		var fn = res[method];
 		res[method] = function(){
-			if (res.headerSent) return;
+			if (res.headersSent) return;
 			fn.apply(res, arguments);
 		}
 	});
@@ -176,7 +175,7 @@ app.get('/robots.txt', function(req, res){
 
 var errorRespond = function(res, error){
 	winston.error(error);
-	if (!res.headerSent){
+	if (!res.headersSent){
 		res.jsonp({
 			error: error.message || JSON.parse(stringify(error))
 		});
