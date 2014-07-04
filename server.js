@@ -284,7 +284,7 @@ request.on('error', function(e){
 	if (e) winston.error(e);
 });
 
-app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res){
+app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
 	cache.get(cacheKey, function(err, result){
 		if (result){
