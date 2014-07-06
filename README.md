@@ -6,14 +6,14 @@ Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Curr
 - API: <http://node-hnapi.herokuapp.com/>
 - API Documentation: <https://github.com/cheeaun/node-hnapi/wiki/API-Documentation>
 
-**NOTE**: If you are planning to scrape a *huge* amount of posts or (historical) data from HN, please **don't use this API**. Use [HNSearch API](http://www.hnsearch.com/api) instead.
+**NOTE**: If you are planning to scrape a *huge* amount of posts or (historical) data from HN, please **don't use this API**. Use the official [HN Search API](http://hn.algolia.com/api) instead.
 
 Quick Start
 ----------
 
 1. `git clone` this repo.
 2. `cd` to repo folder.
-3. Optionally [download, install and start redis](http://redis.io/download).
+3. Optionally download, install and start [redis](http://redis.io/download) or [memcached](http://memcached.org/).
 4. `npm install`
 5. `node server.js`
 6. Load `localhost` in your web browser.
@@ -49,6 +49,7 @@ Licensed under the [MIT License](http://cheeaun.mit-license.org/).
 Other APIs
 ----------
 
+- <http://hn.algolia.com/api>
 - <http://api.ihackernews.com/>
 - <http://hndroidapi.appspot.com/>
 - <http://www.hnsearch.com/api>
