@@ -6,14 +6,14 @@
     "npm": ">=1.2"
   },
   "dependencies": {
-    "express": "~4.3.1",
-    "domino": "~1.0.15",
+    "express": "~4.5.0",
+    "domino": "~1.0.17",
     "redis": "~0.10.3",
     "memory-cache": "~0.0.5",
     "nconf": "~0.6.9",
     "winston": "~0.7.3",
     "winston-papertrail": "~0.1.4",
-    "cors": "~2.2.0",
+    "cors": "~2.3.1",
     "json-stringify-safe": "~5.0.0",
     "universal-analytics": "~0.3.4",
     "memcached": "~0.2.8",
@@ -21,7 +21,7 @@
     "connect-ratelimit": "0.0.6",
     "timequeue": "~0.2.2",
     "morgan": "~1.1.1",
-    "compression": "~1.0.2",
+    "compression": "~1.0.8",
     "on-headers": "0.0.0"
   },
   "subdomain": "node-hnapi",
