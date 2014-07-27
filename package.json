@@ -6,9 +6,9 @@
     "npm": ">=1.2"
   },
   "dependencies": {
-    "express": "~4.5.0",
+    "express": "~4.6.1",
     "domino": "~1.0.17",
-    "redis": "~0.10.3",
+    "redis": "~0.11.0",
     "memory-cache": "~0.0.5",
     "nconf": "~0.6.9",
     "winston": "~0.7.3",
@@ -20,7 +20,7 @@
     "longjohn": "~0.2.4",
     "connect-ratelimit": "0.0.6",
     "timequeue": "~0.2.2",
-    "morgan": "~1.1.1",
+    "morgan": "~1.2.0",
     "compression": "~1.0.8",
     "on-headers": "0.0.0"
   },

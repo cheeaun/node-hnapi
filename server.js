@@ -69,15 +69,15 @@ var reqIP = function(req){
 morgan.token('ip', function(req, res){
 	return reqIP(req);
 });
-app.use(morgan({
+var logFormat = 'path=:url status=:status ip=:ip resp-ms=:response-time'
+	+ (log_referer ? ' referer=:referrer' : '')
+	+ (log_useragent ? ' ua=:user-agent' : '');
+app.use(morgan(logFormat, {
 	stream: {
 		write: function(message){
 			winston.info(message.trim());
 		}
-	},
-	format: 'path=:url status=:status ip=:ip resp-ms=:response-time'
-		+ (log_referer ? ' referer=:referrer' : '')
-		+ (log_useragent ? ' ua=:user-agent' : '')
+	}
 }));
 
 if (nconf.get('universal_analytics')){
