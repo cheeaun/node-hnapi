@@ -291,6 +291,7 @@ app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, func
 			res.jsonp(result);
 		} else {
 			var path = '/' + cacheKey;
+			if (cacheKey == 'news2') path = '/news?p=2';
 			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
