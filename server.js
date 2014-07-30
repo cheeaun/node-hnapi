@@ -9,9 +9,11 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
-if (nconf.get('NEW_RELIC_LICENSE_KEY')) require('newrelic');
 require('longjohn');
 var express = require('express');
+var morgan = require('morgan');
+var compress = require('compression');
+var onHeaders = require('on-headers');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
@@ -64,19 +66,20 @@ var reqIP = function(req){
 	var ips = req.ips;
 	return ips.length ? ips.join(', ') : req.ip;
 };
-express.logger.token('ip', function(req, res){
+morgan.token('ip', function(req, res){
 	return reqIP(req);
 });
-app.use(express.logger({
+var logFormat = 'path=:url status=:status ip=:ip resp-ms=:response-time'
+	+ (log_referer ? ' referer=:referrer' : '')
+	+ (log_useragent ? ' ua=:user-agent' : '');
+app.use(morgan(logFormat, {
 	stream: {
 		write: function(message){
-			winston.info(message.trim()); // Chomp the newline appended by Logger
+			winston.info(message.trim());
 		}
-	},
-	format: 'path=:url status=:status ip=:ip resp-ms=:response-time'
-		+ (log_referer ? ' referer=:referrer' : '')
-		+ (log_useragent ? ' ua=:user-agent' : '')
+	}
 }));
+
 if (nconf.get('universal_analytics')){
 	app.use(function(req, res, next){
 		var headers = {};
@@ -129,12 +132,12 @@ app.use(function(req, res, next){
 	next();
 });
 app.use(cors());
-app.use(express.compress());
+app.use(compress());
 app.use(function(req, res, next){
 	['send', 'set'].forEach(function(method){
 		var fn = res[method];
 		res[method] = function(){
-			if (res.headerSent) return;
+			if (res.headersSent) return;
 			fn.apply(res, arguments);
 		}
 	});
@@ -142,7 +145,7 @@ app.use(function(req, res, next){
 		winston.error('Server timeout: ' + req.url);
 		res.send(504);
 	}, 25000);
-	res.on('header', function(){
+	onHeaders(res, function(){
 		clearTimeout(timeout);
 	});
 	next();
@@ -176,7 +179,7 @@ app.get('/robots.txt', function(req, res){
 
 var errorRespond = function(res, error){
 	winston.error(error);
-	if (!res.headerSent){
+	if (!res.headersSent){
 		res.jsonp({
 			error: error.message || JSON.parse(stringify(error))
 		});
@@ -281,13 +284,14 @@ request.on('error', function(e){
 	if (e) winston.error(e);
 });
 
-app.get(/^\/(news|news2|newest|ask|best|active|noobstories)$/, function(req, res){
+app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
 	cache.get(cacheKey, function(err, result){
 		if (result){
 			res.jsonp(result);
 		} else {
 			var path = '/' + cacheKey;
+			if (cacheKey == 'news2') path = '/news?p=2';
 			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
