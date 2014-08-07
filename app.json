@@ -1,0 +1,7 @@
+{
+  "name": "node-hnapi",
+  "description": "Yet another unofficial API for Hacker News. Currently being used by my other project. Feel free to fork and contribute.",
+  "repository": "https://github.com/cheeaun/node-hnapi",
+  "logo": "https://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "hackernews"]
+}
