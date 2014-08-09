@@ -8,6 +8,8 @@ Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Curr
 
 **NOTE**: If you are planning to scrape a *huge* amount of posts or (historical) data from HN, please **don't use this API**. Use the official [HN Search API](http://hn.algolia.com/api) instead.
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 Quick Start
 ----------
 
