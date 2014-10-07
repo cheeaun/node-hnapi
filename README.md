@@ -51,6 +51,7 @@ Licensed under the [MIT License](http://cheeaun.mit-license.org/).
 Other APIs
 ----------
 
+- [The official Hacker News API](https://github.com/HackerNews/API)
 - <http://hn.algolia.com/api>
 - <http://api.ihackernews.com/>
 - <http://hndroidapi.appspot.com/>
