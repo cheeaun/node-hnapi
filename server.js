@@ -143,7 +143,7 @@ app.use(function(req, res, next){
 	});
 	var timeout = setTimeout(function(){
 		winston.error('Server timeout: ' + req.url);
-		res.send(504);
+		res.status(504).end();
 	}, 25000);
 	onHeaders(res, function(){
 		clearTimeout(timeout);
@@ -169,7 +169,7 @@ app.get('/', function(req, res){
 });
 
 app.get('/favicon.ico', function(req, res){
-	res.send(204);
+	res.status(204).end();
 });
 
 app.get('/robots.txt', function(req, res){
@@ -286,6 +286,7 @@ request.on('error', function(e){
 
 app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
+	var page = req.query.page;
 	cache.get(cacheKey, function(err, result){
 		if (result){
 			res.jsonp(result);
