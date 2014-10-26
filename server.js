@@ -17,6 +17,7 @@ var onHeaders = require('on-headers');
 var cors = require('cors');
 var https = require('https');
 var hndom = require('./lib/hndom.js');
+var hnapi = require('./lib/hnapi.js');
 var Cache = require('./lib/cache.js');
 var zlib = require('zlib');
 var winston = require('winston');
@@ -284,7 +285,33 @@ request.on('error', function(e){
 	if (e) winston.error(e);
 });
 
-app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
+app.get(/^\/(news|news2)$/, function(req, res){
+	var cacheKey = req.params[0];
+	var page = req.query.page;
+	if (cacheKey == 'news') cacheKey += page;
+	cache.get(cacheKey, function(err, result){
+		if (result){
+			res.jsonp(result);
+		} else {
+			if (cacheKey == 'news2') page = 2;
+			hnapi.news({
+				page: page
+			}, function(err, data){
+				if (err){
+					errorRespond(res, err);
+					return;
+				}
+				cache.set(cacheKey, data, CACHE_EXP);
+				res.jsonp(data);
+			});
+
+			// If 'news' expired, 'news2' should expire too
+			if (cacheKey == 'news') cache.del('news2');
+		}
+	});
+});
+
+app.get(/^\/(newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
 	var page = req.query.page;
 	cache.get(cacheKey, function(err, result){
@@ -307,13 +334,30 @@ app.get(/^\/(news|news2|newest|ask|show|shownew|best|active|noobstories)$/, func
 					res.jsonp(data);
 				});
 			});
-
-			// If 'news' expired, 'news2' should expire too
-			if (cacheKey == 'news') cache.del('news2');
 		}
 	});
 });
 
+app.get(/^\/item\/(\d+)$/, function(req, res){
+	var postID = req.params[0];
+	var cacheKey = 'post' + postID;
+	cache.get(cacheKey, function(err, result){
+		if (result){
+			res.jsonp(result);
+		} else {
+			hnapi.item(postID, function(err, data){
+				if (err){
+					errorRespond(res, err);
+					return;
+				}
+				cache.set(cacheKey, data, CACHE_EXP);
+				res.jsonp(data);
+			});
+		}
+	});
+});
+
+/*
 app.get(/^\/item\/(\d+)$/, function(req, res){
 	var postID = req.params[0];
 	var cacheKey = 'post' + postID;
@@ -339,6 +383,7 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 		}
 	});
 });
+*/
 
 app.get(/^\/comments\/(\w+)$/, function(req, res){
 	var commentID = req.params[0];
@@ -398,6 +443,26 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 		if (result){
 			res.jsonp(result);
 		} else {
+			hnapi.user(userID, function(err, data){
+				if (err){
+					errorRespond(res, err);
+					return;
+				}
+				cache.set(cacheKey, data, CACHE_EXP);
+				res.jsonp(data);
+			});
+		}
+	});
+});
+
+/*
+app.get(/^\/user\/(\w+)$/, function(req, res){
+	var userID = req.params[0];
+	var cacheKey = 'user' + userID;
+	cache.get(cacheKey, function(err, result){
+		if (result){
+			res.jsonp(result);
+		} else {
 			var path = '/user?id=' + userID;
 			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
@@ -416,5 +481,6 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 		}
 	});
 });
+*/
 
 app.listen(nconf.get('PORT') || nconf.get('port'));
