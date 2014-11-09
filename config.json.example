@@ -3,11 +3,5 @@
 	"cache_exp": 600,
 	"log_referer": false,
 	"log_useragent": false,
-	"ratelimit": false,
-	"cache": {
-	},
-	"papertrail": {
-	},
-	"universal_analytics": {
-	}
+	"ratelimit": false
 }
