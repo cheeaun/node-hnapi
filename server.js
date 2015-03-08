@@ -285,16 +285,19 @@ request.on('error', function(e){
 	if (e) winston.error(e);
 });
 
-app.get(/^\/(news|news2)$/, function(req, res){
-	var cacheKey = req.params[0];
+app.get(/^\/(news|news2|newest|ask|show|jobs)$/, function(req, res){
+	var base = req.params[0];
 	var page = req.query.page;
-	if (cacheKey == 'news') cacheKey += page;
+	if (base == 'news2'){ // Totally ignore `page` if `news2`
+		base = 'news';
+		page = 2;
+	}
+	var cacheKey = base + page;
 	cache.get(cacheKey, function(err, result){
 		if (result){
 			res.jsonp(result);
 		} else {
-			if (cacheKey == 'news2') page = 2;
-			hnapi.news({
+			hnapi[base]({
 				page: page
 			}, function(err, data){
 				if (err){
@@ -306,12 +309,12 @@ app.get(/^\/(news|news2)$/, function(req, res){
 			});
 
 			// If 'news' expired, 'news2' should expire too
-			if (cacheKey == 'news') cache.del('news2');
+			if (cacheKey == 'news' || cacheKey == 'news1') cache.del('news2');
 		}
 	});
 });
 
-app.get(/^\/(newest|ask|show|shownew|best|active|noobstories)$/, function(req, res){
+app.get(/^\/(shownew|best|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
 	var page = req.query.page;
 	cache.get(cacheKey, function(err, result){
