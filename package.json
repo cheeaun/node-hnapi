@@ -6,13 +6,13 @@
     "npm": ">=1.2"
   },
   "dependencies": {
-    "compression": "~1.4.0",
+    "compression": "~1.4.1",
     "connect-ratelimit": "0.0.6",
     "cors": "~2.5.3",
     "domino": "~1.0.18",
-    "express": "~4.11.2",
+    "express": "~4.12.2",
     "extend": "~2.0.0",
-    "firebase": "~2.1.2",
+    "firebase": "~2.2.1",
     "json-stringify-safe": "~5.0.0",
     "longjohn": "~0.2.4",
     "memcached": "~0.2.8",
