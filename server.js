@@ -9,7 +9,6 @@ nconf.argv()
 		cache_exp: 60*10 // 10 mins
 	});
 
-require('longjohn');
 var express = require('express');
 var morgan = require('morgan');
 var compress = require('compression');
