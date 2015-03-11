@@ -12,7 +12,7 @@
     "domino": "~1.0.18",
     "express": "~4.12.2",
     "extend": "~2.0.0",
-    "firebase": "~2.2.1",
+    "firebase": "~2.2.2",
     "json-stringify-safe": "~5.0.0",
     "longjohn": "~0.2.4",
     "memcached": "~0.2.8",
