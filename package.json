@@ -14,7 +14,6 @@
     "extend": "~2.0.0",
     "firebase": "~2.2.2",
     "json-stringify-safe": "~5.0.0",
-    "longjohn": "~0.2.4",
     "memcached": "~0.2.8",
     "memory-cache": "~0.1.2",
     "moment": "~2.10.0",
