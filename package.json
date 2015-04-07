@@ -26,7 +26,7 @@
     "timequeue": "~0.2.2",
     "universal-analytics": "~0.3.6",
     "winston": "~0.9.0",
-    "winston-papertrail": "~0.1.4"
+    "winston-papertrail": "~1.0.1"
   },
   "subdomain": "node-hnapi",
   "scripts": {
