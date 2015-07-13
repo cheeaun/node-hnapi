@@ -144,7 +144,7 @@ app.use(function(req, res, next){
 	var timeout = setTimeout(function(){
 		winston.error('Server timeout: ' + req.url);
 		res.status(504).end();
-	}, 25000);
+	}, 29000);
 	onHeaders(res, function(){
 		clearTimeout(timeout);
 	});
