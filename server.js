@@ -347,11 +347,14 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 		if (result){
 			res.jsonp(result);
 		} else {
+			var start = Date.now();
 			hnapi.item(postID, function(err, data){
 				if (err){
 					errorRespond(res, err);
 					return;
 				}
+				var time = Date.now() - start;
+				if (time > 25000) winston.info('Fetch duration for #' + postID + ': ' + time + 'ms');
 				cache.set(cacheKey, data, CACHE_EXP);
 				res.jsonp(data);
 			});
