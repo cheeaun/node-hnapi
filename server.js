@@ -69,7 +69,12 @@ var reqIP = function(req){
 morgan.token('ip', function(req, res){
 	return reqIP(req);
 });
-var logFormat = 'path=:url status=:status ip=:ip resp-ms=:response-time'
+morgan.token('shorter-response-time', function getResponseTimeToken(req, res) {
+  if (!req._startAt || !res._startAt) return;
+  var ms = (res._startAt[0] - req._startAt[0]) * 1e3 + (res._startAt[1] - req._startAt[1]) * 1e-6;
+  return ms.toFixed(0); // By default, morgan uses 3, but I don't need that much accuracy :)
+});
+var logFormat = 'path=:url status=:status ip=:ip resp-ms=:shorter-response-time'
 	+ (log_referer ? ' referer=:referrer' : '')
 	+ (log_useragent ? ' ua=:user-agent' : '');
 app.use(morgan(logFormat, {
