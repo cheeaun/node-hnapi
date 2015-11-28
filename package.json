@@ -28,7 +28,7 @@
   },
   "subdomain": "node-hnapi",
   "scripts": {
-    "start": "server.js"
+    "start": "node server.js"
   },
   "main": "server.js"
 }
