@@ -291,7 +291,7 @@ request.on('error', function(e){
 
 app.get(/^\/(news|news2|newest|ask|show|jobs)$/, function(req, res){
 	var base = req.params[0];
-	var page = req.query.page;
+	var page = req.query.page || '';
 	if (base == 'news2'){ // Totally ignore `page` if `news2`
 		base = 'news';
 		page = 2;
