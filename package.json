@@ -8,7 +8,7 @@
     "compression": "~1.6.1",
     "connect-ratelimit": "0.0.7",
     "cors": "~2.7.1",
-    "domino": "~1.0.21",
+    "domino": "~1.0.23",
     "express": "~4.13.4",
     "extend": "~3.0.0",
     "firebase": "~2.4.0",
