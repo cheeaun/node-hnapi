@@ -308,7 +308,7 @@ app.get(/^\/(news|news2|newest|ask|show|jobs)$/, function(req, res){
 					errorRespond(res, err);
 					return;
 				}
-				cache.set(cacheKey, data, CACHE_EXP);
+				cache.set(cacheKey, data, page > 1 ? CACHE_EXP/2 : CACHE_EXP);
 				res.jsonp(data);
 			});
 
