@@ -20,6 +20,11 @@ Quick Start
 5. `npm start`
 6. Load `localhost` in your web browser.
 
+
+Example
+-------------
+[http://node-hnapi.herokuapp.com/news?page=3](http://node-hnapi.herokuapp.com/news?page=3)
+
 Configuration
 -------------
 
