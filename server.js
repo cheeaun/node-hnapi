@@ -367,60 +367,6 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 	});
 });
 
-/*
-app.get(/^\/item\/(\d+)$/, function(req, res){
-	var postID = req.params[0];
-	var cacheKey = 'post' + postID;
-	cache.get(cacheKey, function(err, result){
-		if (result){
-			res.jsonp(result);
-		} else {
-			var path = '/item?id=' + postID;
-			request.push(path, { ip: reqIP(req) }, function(err, body){
-				if (err){
-					errorRespond(res, err);
-					return;
-				}
-				hndom.comments(body, function(e, data){
-					if (e){
-						errorRespond(res, e);
-						return;
-					}
-					cache.set(cacheKey, data, CACHE_EXP);
-					res.jsonp(data);
-				});
-			});
-		}
-	});
-});
-*/
-
-app.get(/^\/comments\/(\w+)$/, function(req, res){
-	var commentID = req.params[0];
-	var cacheKey = 'comments' + commentID;
-	cache.get(cacheKey, function(err, result){
-		if (result){
-			res.jsonp(result);
-		} else {
-			var path = '/x?fnid=' + commentID;
-			request.push(path, { ip: reqIP(req) }, function(err, body){
-				if (err){
-					errorRespond(res, err);
-					return;
-				}
-				hndom.moreComments(body, function(e, data){
-					if (e){
-						errorRespond(res, e);
-						return;
-					}
-					cache.set(cacheKey, data, CACHE_EXP);
-					res.jsonp(data);
-				});
-			});
-		}
-	});
-});
-
 app.get('/newcomments', function(req, res){
 	var cacheKey = 'newcomments';
 	cache.get(cacheKey, function(err, result){
@@ -464,33 +410,5 @@ app.get(/^\/user\/(\w+)$/, function(req, res){
 		}
 	});
 });
-
-/*
-app.get(/^\/user\/(\w+)$/, function(req, res){
-	var userID = req.params[0];
-	var cacheKey = 'user' + userID;
-	cache.get(cacheKey, function(err, result){
-		if (result){
-			res.jsonp(result);
-		} else {
-			var path = '/user?id=' + userID;
-			request.push(path, { ip: reqIP(req) }, function(err, body){
-				if (err){
-					errorRespond(res, err);
-					return;
-				}
-				hndom.user(body, function(e, data){
-					if (e){
-						errorRespond(res, e);
-						return;
-					}
-					cache.set(cacheKey, data, CACHE_EXP);
-					res.jsonp(data);
-				});
-			});
-		}
-	});
-});
-*/
 
 app.listen(nconf.get('PORT') || nconf.get('port'));
