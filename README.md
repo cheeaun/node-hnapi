@@ -23,7 +23,7 @@ Quick Start
 
 Example
 -------------
-[http://node-hnapi.herokuapp.com/news?page=3](http://node-hnapi.herokuapp.com/news?page=3)
+<https://node-hnapi.herokuapp.com/news?page=3>
 
 Configuration
 -------------
