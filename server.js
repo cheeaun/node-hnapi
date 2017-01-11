@@ -161,7 +161,7 @@ app.get('/', function(req, res){
 	res.send(JSON.stringify({
 		name: 'node-hnapi',
 		desc: 'Unofficial Hacker News API',
-		version: '0.3',
+		version: '1.0.0',
 		project_url: 'https://github.com/cheeaun/node-hnapi/',
 		documentation_url: 'https://github.com/cheeaun/node-hnapi/wiki/API-Documentation',
 		author: 'cheeaun',
