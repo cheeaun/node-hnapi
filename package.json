@@ -21,7 +21,5 @@
     "universal-analytics": "~0.4.8",
     "winston": "~2.3.0",
     "winston-papertrail": "~1.0.4"
-  },
-  "subdomain": "node-hnapi",
-  "main": "server.js"
+  }
 }
