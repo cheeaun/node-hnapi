@@ -8,7 +8,7 @@
     "domino": "~1.0.28",
     "express": "~4.15.2",
     "extend": "~3.0.0",
-    "firebase": "~3.6.10",
+    "firebase": "~3.7.6",
     "json-stringify-safe": "~5.0.1",
     "memcached": "~2.2.2",
     "memory-cache": "~0.1.6",
