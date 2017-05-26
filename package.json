@@ -20,6 +20,12 @@
     "timequeue": "~0.2.3",
     "universal-analytics": "~0.4.9",
     "winston": "~2.3.1",
-    "winston-papertrail": "~1.0.4"
-  }
+    "winston-papertrail": "~1.0.4",
+    "snyk": "^1.31.0"
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
