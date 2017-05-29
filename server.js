@@ -392,7 +392,7 @@ app.get('/newcomments', function(req, res){
 	});
 });
 
-app.get(/^\/user\/(\w+)$/, function(req, res){
+app.get(/^\/user\/([\w\-]+)$/, function(req, res){
 	var userID = req.params[0];
 	var cacheKey = 'user' + userID;
 	cache.get(cacheKey, function(err, result){
