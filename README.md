@@ -4,6 +4,7 @@ Hacker News (unofficial) API
 Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Currently being used by [my other project](https://github.com/cheeaun/hackerweb). Feel free to fork and contribute.
 
 - API: <https://node-hnapi.herokuapp.com/>
+- API (Cloudflare CDN, faster response time): <http://api.hackerwebapp.com/>
 - API Documentation: <https://github.com/cheeaun/node-hnapi/wiki/API-Documentation>
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
