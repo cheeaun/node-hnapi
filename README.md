@@ -23,7 +23,7 @@ Quick Start
 2. `cd` to repo folder.
 3. Optionally download, install and start [redis](http://redis.io/download) or [memcached](http://memcached.org/).
 4. `yarn`
-5. yarn start`
+5. `yarn start`
 6. Load `localhost` in your web browser.
 
 
