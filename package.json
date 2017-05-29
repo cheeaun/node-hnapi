@@ -4,22 +4,22 @@
   "dependencies": {
     "compression": "~1.6.2",
     "connect-ratelimit": "0.0.7",
-    "cors": "~2.8.1",
+    "cors": "~2.8.3",
     "domino": "~1.0.28",
-    "express": "~4.15.2",
-    "extend": "~3.0.0",
-    "firebase": "~3.7.6",
+    "express": "~4.15.3",
+    "extend": "~3.0.1",
+    "firebase": "~4.0.0",
     "json-stringify-safe": "~5.0.1",
     "memcached": "~2.2.2",
     "memory-cache": "~0.1.6",
-    "moment": "~2.17.1",
-    "morgan": "~1.8.1",
+    "moment": "~2.18.1",
+    "morgan": "~1.8.2",
     "nconf": "~0.8.4",
     "on-headers": "~1.0.1",
-    "redis": "~2.6.5",
-    "timequeue": "~0.2.3",
-    "universal-analytics": "~0.4.9",
+    "redis": "~2.7.1",
+    "timequeue": "~1.0.0",
+    "universal-analytics": "~0.4.13",
     "winston": "~2.3.1",
-    "winston-papertrail": "~1.0.4"
+    "winston-papertrail": "~1.0.5"
   }
 }
