@@ -1,6 +1,9 @@
 {
   "name": "node-hnapi",
   "version": "1.0.0",
+  "engines": {
+    "node": "stable"
+  },
   "dependencies": {
     "compression": "~1.6.2",
     "connect-ratelimit": "0.0.7",
