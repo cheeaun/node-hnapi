@@ -7,6 +7,8 @@ Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Curr
 - API (Cloudflare CDN, faster response time): <http://api.hackerwebapp.com/>
 - API Documentation: <https://github.com/cheeaun/node-hnapi/wiki/API-Documentation>
 
+[![Donate](https://d1iczxrky3cnb2.cloudfront.net/button-small-blue.png) 🙏🙏🙏 Please support my work (domain and server hosting fees)](https://donorbox.org/support-cheeaun)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 ---
