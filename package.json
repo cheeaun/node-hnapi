@@ -2,7 +2,7 @@
   "name": "node-hnapi",
   "version": "1.0.0",
   "engines": {
-    "node": "stable"
+    "node": ">=8.x"
   },
   "dependencies": {
     "compression": "~1.7.0",
