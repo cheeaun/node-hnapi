@@ -12,6 +12,7 @@
     "express": "~4.15.3",
     "extend": "~3.0.1",
     "firebase": "~4.2.0",
+    "he": "^1.1.1",
     "json-stringify-safe": "~5.0.1",
     "memcached": "~2.2.2",
     "memory-cache": "~0.2.0",
