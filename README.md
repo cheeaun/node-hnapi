@@ -11,6 +11,8 @@ Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Curr
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
+<a href="https://app.codesponsor.io/link/jps1dCLmKkCZBFiD34w2388o/cheeaun/node-hnapi" rel="nofollow"><img src="https://app.codesponsor.io/embed/jps1dCLmKkCZBFiD34w2388o/cheeaun/node-hnapi.svg" style="width: 888px; height: 68px;" alt="Sponsor" /></a>
+
 ---
 
 # PLEASE READ THIS
