@@ -16,7 +16,7 @@
     "json-stringify-safe": "~5.0.1",
     "memcached": "~2.2.2",
     "memory-cache": "~0.2.0",
-    "moment": "~2.18.1",
+    "moment": "~2.19.3",
     "morgan": "~1.8.2",
     "nconf": "~0.8.4",
     "on-headers": "~1.0.1",
