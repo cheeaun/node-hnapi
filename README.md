@@ -16,7 +16,8 @@ Yet another unofficial API for [Hacker News](http://news.ycombinator.com/). Curr
 
 ---
 
-# PLEASE READ THIS
+🚧 PLEASE READ THIS 🚧
+---
 
 If you are planning to scrape a *huge* amount of posts or (historical) data from HN, please **don't use this API**. Use the official [Hacker News API](https://github.com/HackerNews/API) or [HN Search API](http://hn.algolia.com/api) instead.
 
@@ -35,7 +36,8 @@ Quick Start
 
 Example
 -------------
-<https://node-hnapi.herokuapp.com/news?page=3>
+
+> <http://api.hackerwebapp.com/news?page=2>
 
 Configuration
 -------------
