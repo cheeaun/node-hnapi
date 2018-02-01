@@ -5,13 +5,14 @@
     "node": ">=8.x"
   },
   "dependencies": {
+    "@firebase/app": "~0.1.7",
+    "@firebase/database": "~0.1.8",
     "compression": "~1.7.1",
     "connect-ratelimit": "0.0.7",
     "cors": "~2.8.4",
     "domino": "~2.0.0",
     "express": "~4.16.2",
     "extend": "~3.0.1",
-    "firebase": "~4.8.1",
     "he": "^1.1.1",
     "json-stringify-safe": "~5.0.1",
     "memcached": "~2.2.2",
