@@ -1,124 +1,80 @@
-// Config
+require('dotenv').config();
 
-var nconf = require('nconf');
-nconf.argv().env().file('config.json').defaults({
-	port: 80,
-	cache_exp: 60*10 // 10 mins
-});
-
-var express = require('express');
-var morgan = require('morgan');
-var compress = require('compression');
-var onHeaders = require('on-headers');
-var cors = require('cors');
-var https = require('https');
-var hndom = require('./lib/hndom.js');
-var hnapi = require('./lib/hnapi.js');
-var Cache = require('./lib/cache.js');
-var zlib = require('zlib');
-var winston = require('winston');
-var stringify = require('json-stringify-safe');
-var ua = require('universal-analytics');
-var TimeQueue = require('timequeue');
+const express = require('express');
+const morgan = require('morgan');
+const compress = require('compression');
+const onHeaders = require('on-headers');
+const cors = require('cors');
+const https = require('https');
+const hndom = require('./lib/hndom.js');
+const hnapi = require('./lib/hnapi.js');
+const Cache = require('./lib/cache.js');
+const zlib = require('zlib');
+const winston = require('winston');
+const stringify = require('json-stringify-safe');
+const TimeQueue = require('timequeue');
 
 var HOST = 'news.ycombinator.com';
-var CACHE_EXP = parseInt(nconf.get('cache_exp'), 10);
-var log_referer = nconf.get('log_referer');
-var log_useragent = nconf.get('log_useragent');
-var ua_tid = nconf.get('universal_analytics:tid');
-var ua_hostname = nconf.get('universal_analytics:hostname');
-
-// Papertrail
-
-var papertrailOptions = nconf.get('papertrail');
-if (papertrailOptions){
-	require('winston-papertrail');
-	// papertrailOptions.handleExceptions = true;
-	winston.add(winston.transports.Papertrail, papertrailOptions);
-}
+var CACHE_EXP = parseInt(process.env.CACHE_EXP, 10);
+const {
+	LOG_REFERER,
+	LOG_USERAGENT,
+	CACHE_STORE,
+	CACHE_SERVERS,
+	CACHE_MEMORY,
+	RATELIMIT_BLACKLIST,
+} = process.env;
 
 // Cache
-
-var cacheOptions = nconf.get('cache:options') || {};
-console.log('cacheOptions', cacheOptions);
-cacheOptions.onConnect = function(){
-	winston.info('Connected to cache server.');
-};
-cacheOptions.onError = function(e){
-	if (e) winston.error(e.toString ? e.toString() : e);
-};
-var cacheMemory = nconf.get('cache:memory');
+let cacheMemory = CACHE_MEMORY;
 if (typeof cacheMemory == 'string') cacheMemory = cacheMemory == 'true';
-var cache = Cache({
+const cache = Cache({
 	memory: cacheMemory,
 	expiry: CACHE_EXP,
-	store: nconf.get('cache:store'),
-	options: cacheOptions
+	store: CACHE_STORE,
+	options: {
+		servers: CACHE_SERVERS,
+		onConnect: () => {
+			winston.info('Connected to cache server.');
+		},
+		onError: (e) => {
+			if (e) winston.error(e.toString ? e.toString() : e);
+		}
+	}
 });
 
-var app = express();
+const app = express();
 app.set('json spaces', 0);
 app.set('trust proxy', true);
 
-var reqIP = function(req){
+const reqIP = function(req){
 	var ips = req.ips;
 	return ips.length ? ips.join(', ') : req.ip;
 };
-morgan.token('ip', function(req, res){
+morgan.token('ip', (req, res) => {
 	return reqIP(req);
 });
-morgan.token('shorter-response-time', function getResponseTimeToken(req, res) {
+morgan.token('shorter-response-time', (req, res) => {
   if (!req._startAt || !res._startAt) return;
-  var ms = (res._startAt[0] - req._startAt[0]) * 1e3 + (res._startAt[1] - req._startAt[1]) * 1e-6;
+  const ms = (res._startAt[0] - req._startAt[0]) * 1e3 + (res._startAt[1] - req._startAt[1]) * 1e-6;
   return ms.toFixed(0); // By default, morgan uses 3, but I don't need that much accuracy :)
 });
-var logFormat = 'path=:url status=:status ip=:ip resp-ms=:shorter-response-time'
-	+ (log_referer ? ' referer=:referrer' : '')
-	+ (log_useragent ? ' ua=:user-agent' : '');
+const logFormat = 'path=:url status=:status ip=:ip resp-ms=:shorter-response-time'
+	+ (LOG_REFERER ? ' referer=:referrer' : '')
+	+ (LOG_USERAGENT ? ' ua=:user-agent' : '');
 app.use(morgan(logFormat, {
 	stream: {
-		write: function(message){
+		write: (message) => {
 			winston.info(message.trim());
 		}
 	}
 }));
 
-if (nconf.get('universal_analytics')){
-	app.use(function(req, res, next){
-		var headers = {};
-		var userAgent = req.headers['user-agent'];
-		if (userAgent) headers['User-Agent'] = userAgent;
-		var visitor = ua(ua_tid, {
-			headers: headers
-		});
-
-		req.__startTime = new Date;
-		var end = res.end;
-		res.end = function(chunk, encoding){
-			res.end = end;
-			res.end(chunk, encoding);
-			var time = new Date - req.__startTime;
-			visitor.timing('HN API', 'Response time', time).send();
-		}
-
-		var params = {
-			dp: req.originalUrl || req.url,
-			dr: req.headers['referer'] || req.headers['referrer'] || ''
-		};
-		if (ua_hostname) params.dh = ua_hostname;
-		visitor.pageview(params, function(e){
-			if (e) winston.error(e);
-		}).send();
-		next();
-	});
-}
-
-var rateLimit = nconf.get('ratelimit');
-if (rateLimit && rateLimit.blacklist){
-	var limiter = require('connect-ratelimit');
-	var blacklist = rateLimit.blacklist.split(' ');
+if (RATELIMIT_BLACKLIST){
+	const limiter = require('connect-ratelimit');
+	const blacklist = RATELIMIT_BLACKLIST.split(' ');
 	app.use(limiter({
-		blacklist: blacklist,
+		blacklist,
 		end: true,
 		catagories: {
 			blacklist: {
@@ -201,16 +157,8 @@ var requestWorker = function(path, data, fn, done){
 	var start;
 	var req = REQUESTS[path];
 
-	var visitor = ua(ua_tid);
-
 	if (!req){
 		winston.info('Fetching ' + path);
-		visitor.event({
-			ec: 'HN Fetch', // Event Category
-			ea: 'Fetch start', // Event Action
-			el: path, // Event Label
-			dh: ua_hostname // Document hostname
-		}).send();
 
 		start = new Date();
 		var headers = {
@@ -229,28 +177,11 @@ var requestWorker = function(path, data, fn, done){
 		});
 		REQUESTS[path] = req;
 	}
-	var trackTiming = function(options){
-		if (!start) return;
-		if (!options) options = {};
-		var time = new Date() - start;
-		var gzipStr = options.isGzip ? ' (gzip)' : '';
-		var gzipLabel = options.isGzip ? 'gzip' : 'non-gzip';
-		winston.info('Fetch duration ' + path + gzipStr + ': ' + time + 'ms');
-		visitor.timing('HN fetch', 'Fetch duration', time, gzipLabel).send();
-	};
 	req.on('response', function(r){
 		delete REQUESTS[path];
 
 		if (r.statusCode != 200){
 			var statusCode = r.statusCode;
-			visitor.event({
-				ec: 'HN Fetch', // Event Category
-				ea: 'Fetch status', // Event Action
-				el: statusCode, // Event Label
-				dh: ua_hostname // Document hostname
-			}, function(){
-				fn({statusCode: statusCode});
-			});
 			return;
 		}
 
@@ -262,7 +193,6 @@ var requestWorker = function(path, data, fn, done){
 			gunzip.on('data', function(data){
 				body += data.toString();
 			}).on('end', function(){
-				trackTiming({isGzip: true});
 				fn(null, body);
 			}).on('error', fn);
 			r.pipe(gunzip);
@@ -270,7 +200,6 @@ var requestWorker = function(path, data, fn, done){
 			r.on('data', function(chunk){
 				body += chunk;
 			}).on('end', function(){
-				trackTiming();
 				fn(null, body);
 			}).on('error', fn);
 		}
@@ -409,4 +338,4 @@ app.get(/^\/user\/([\w\-]+)$/, function(req, res){
 	});
 });
 
-app.listen(nconf.get('PORT') || nconf.get('port'));
+app.listen(process.env.PORT);

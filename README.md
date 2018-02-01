@@ -39,25 +39,15 @@ Example
 Configuration
 -------------
 
-HNapi uses [nconf](https://github.com/flatiron/nconf) for configuration, which can be done via the `config.json` file, environment variables and command-line arguments.
+HNapi uses [dotenv](https://github.com/motdotla/dotenv) for configuration.
 
-- `port` - (default: `80`) Server port
-- `cache_exp` - (default: `600`) Cache expiry in seconds
-- `log_referer` - (default: `false`) Logs referers
-- `log_useragent` - (default: `false`) Logs user-agent strings
-- `cache`
-	- `memory` - (default: `true`) Use in-memory caching
-	- `store` - (`memcached` | `redis`, default: none) Specify the cache store
-	- `options` - Options for specified cache store
-		- `servers` - `HOST:PORT` for memcached server
-		- `url` - `redis://USERNAME:PASSWORD@HOST:PORT` for redis server
-		- `debug` - (default: `false`) Allows debugging (only for redis store)
-- `papertrail` - for logging with [Papertrail](http://papertrailapp.com/)
-	- `host`
-	- `port`
-	- `hostname` (optional) - host name for the server
-- `universal_analytics` - for logging with [Google Analytics' Universal Analytics' Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/)
-	- `tid` - tracking ID
+- `PORT` - (default: `1337`) Server port
+- `CACHE_EXP` - (default: `600`) Cache expiry in seconds
+- `LOG_REFERER` - (default: `false`) Logs referers
+- `LOG_USERAGENT` - (default: `false`) Logs user-agent strings
+- `CACHE_MEMORY` - (default: `true`) Use in-memory caching
+- `CACHE_STORE` - (`memcached`, default: none) Specify the cache store
+- `CACHE_SERVERS` - `HOST:PORT` for memcached server
 
 License
 -------

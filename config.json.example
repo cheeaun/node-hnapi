@@ -1,7 +1,0 @@
-{
-	"port": 80,
-	"cache_exp": 600,
-	"log_referer": false,
-	"log_useragent": false,
-	"ratelimit": false
-}
