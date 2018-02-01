@@ -1,13 +1,10 @@
 // Config
 
 var nconf = require('nconf');
-nconf.argv()
-	.env()
-	.file('config.json')
-	.defaults({
-		port: 80,
-		cache_exp: 60*10 // 10 mins
-	});
+nconf.argv().env().file('config.json').defaults({
+	port: 80,
+	cache_exp: 60*10 // 10 mins
+});
 
 var express = require('express');
 var morgan = require('morgan');
