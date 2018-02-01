@@ -43,6 +43,7 @@ if (papertrailOptions){
 // Cache
 
 var cacheOptions = nconf.get('cache:options') || {};
+console.log('cacheOptions', cacheOptions);
 cacheOptions.onConnect = function(){
 	winston.info('Connected to cache server.');
 };
