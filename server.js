@@ -5,16 +5,13 @@ const morgan = require('morgan');
 const compress = require('compression');
 const onHeaders = require('on-headers');
 const cors = require('cors');
-const https = require('https');
-const zlib = require('zlib');
 const stringify = require('json-stringify-safe');
-const TimeQueue = require('timequeue');
 
-const hndom = require('./lib/hndom.js');
-const hnapi = require('./lib/hnapi.js');
-const Cache = require('./lib/cache.js');
+const hndom = require('./lib/hndom');
+const hnapi = require('./lib/hnapi');
+const Cache = require('./lib/cache');
+const request = require('./lib/request');
 
-var HOST = 'news.ycombinator.com';
 var CACHE_EXP = parseInt(process.env.CACHE_EXP, 10);
 const {
 	PORT,
@@ -50,17 +47,12 @@ app.set('trust proxy', true);
 
 const reqIP = function(req){
 	var ips = req.ips;
-	return ips.length ? ips.join(', ') : req.ip;
+	return ips.length ? ips.join(',') : req.ip;
 };
 morgan.token('ip', (req, res) => {
 	return reqIP(req);
 });
-morgan.token('shorter-response-time', (req, res) => {
-  if (!req._startAt || !res._startAt) return;
-  const ms = (res._startAt[0] - req._startAt[0]) * 1e3 + (res._startAt[1] - req._startAt[1]) * 1e-6;
-  return ms.toFixed(0); // By default, morgan uses 3, but I don't need that much accuracy :)
-});
-const logFormat = 'path=:url status=:status ip=:ip resp-ms=:shorter-response-time'
+const logFormat = ':method :url :status :ip :response-time[0]ms'
 	+ (LOG_REFERER ? ' referer=:referrer' : '')
 	+ (LOG_USERAGENT ? ' ua=:user-agent' : '');
 app.use(morgan(logFormat, {
@@ -153,74 +145,6 @@ var errorRespond = function(res, error){
 		process.exit(1);
 	});
 };
-
-var REQUESTS = {}; // Caching fetch requests as a way to "debounce" incoming requests
-var requestWorker = function(path, data, fn, done){
-	if (typeof data == 'function'){
-		done = fn;
-		fn = data;
-	}
-	var start;
-	var req = REQUESTS[path];
-
-	if (!req){
-		console.info('Fetching ' + path);
-
-		start = new Date();
-		var headers = {
-			'Accept-Encoding': 'gzip',
-		};
-		if (data.ip) headers['X-Forwarded-For'] = data.ip;
-		req = https.get({
-			host: HOST,
-			path: path,
-			headers: headers,
-			agent: false
-		});
-		req.setTimeout(10000, function(){
-			req.abort();
-			delete REQUESTS[path];
-		});
-		REQUESTS[path] = req;
-	}
-	req.on('response', function(r){
-		delete REQUESTS[path];
-
-		if (r.statusCode != 200){
-			var statusCode = r.statusCode;
-			return;
-		}
-
-		var body = '';
-
-		var contentEncoding = r.headers['content-encoding'];
-		if (contentEncoding && contentEncoding.toLowerCase().indexOf('gzip') > -1){
-			var gunzip = zlib.createGunzip();
-			gunzip.on('data', function(data){
-				body += data.toString();
-			}).on('end', function(){
-				fn(null, body);
-			}).on('error', fn);
-			r.pipe(gunzip);
-		} else {
-			r.on('data', function(chunk){
-				body += chunk;
-			}).on('end', function(){
-				fn(null, body);
-			}).on('error', fn);
-		}
-	}).on('error', fn).end();
-	done();
-};
-var request = new TimeQueue(requestWorker, {
-	// 1 fetch every sec
-	concurrency: 1,
-	every: 1000,
-	maxQueued: 1000
-});
-request.on('error', function(e){
-	if (e) console.error(e);
-});
 
 app.get(/^\/(news|news2|newest|ask|show|jobs)$/, function(req, res){
 	var base = req.params[0];
