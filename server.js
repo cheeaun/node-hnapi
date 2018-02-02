@@ -6,16 +6,18 @@ const compress = require('compression');
 const onHeaders = require('on-headers');
 const cors = require('cors');
 const https = require('https');
-const hndom = require('./lib/hndom.js');
-const hnapi = require('./lib/hnapi.js');
-const Cache = require('./lib/cache.js');
 const zlib = require('zlib');
 const stringify = require('json-stringify-safe');
 const TimeQueue = require('timequeue');
 
+const hndom = require('./lib/hndom.js');
+const hnapi = require('./lib/hnapi.js');
+const Cache = require('./lib/cache.js');
+
 var HOST = 'news.ycombinator.com';
 var CACHE_EXP = parseInt(process.env.CACHE_EXP, 10);
 const {
+	PORT,
 	LOG_REFERER,
 	LOG_USERAGENT,
 	CACHE_STORE,
@@ -342,4 +344,5 @@ app.get(/^\/user\/([\w\-]+)$/, function(req, res){
 	});
 });
 
-app.listen(process.env.PORT);
+app.listen(PORT);
+console.log('Listening to port ' + PORT);
