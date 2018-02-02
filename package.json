@@ -21,7 +21,6 @@
     "moment": "~2.20.1",
     "morgan": "~1.9.0",
     "on-headers": "~1.0.1",
-    "timequeue": "~1.1.0",
-    "winston": "~2.4.0"
+    "timequeue": "~1.1.0"
   }
 }

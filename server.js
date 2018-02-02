@@ -10,7 +10,6 @@ const hndom = require('./lib/hndom.js');
 const hnapi = require('./lib/hnapi.js');
 const Cache = require('./lib/cache.js');
 const zlib = require('zlib');
-const winston = require('winston');
 const stringify = require('json-stringify-safe');
 const TimeQueue = require('timequeue');
 
@@ -35,10 +34,10 @@ const cache = Cache({
 	options: {
 		servers: CACHE_SERVERS,
 		onConnect: () => {
-			winston.info('Connected to cache server.');
+			console.info('Connected to cache server.');
 		},
 		onError: (e) => {
-			if (e) winston.error(e.toString ? e.toString() : e);
+			if (e) console.error(e.toString ? e.toString() : e);
 		}
 	}
 });
@@ -65,7 +64,7 @@ const logFormat = 'path=:url status=:status ip=:ip resp-ms=:shorter-response-tim
 app.use(morgan(logFormat, {
 	stream: {
 		write: (message) => {
-			winston.info(message.trim());
+			console.info(message.trim());
 		}
 	}
 }));
@@ -101,7 +100,7 @@ app.use(function(req, res, next){
 		}
 	});
 	var timeout = setTimeout(function(){
-		winston.error('Server timeout: ' + req.url);
+		console.error('Server timeout: ' + req.url);
 		res.status(504).end();
 	}, 29000);
 	onHeaders(res, function(){
@@ -137,7 +136,7 @@ app.get('/robots.txt', function(req, res){
 });
 
 var errorRespond = function(res, error){
-	winston.error(error);
+	console.error(error);
 	if (!res.headersSent){
 		res.jsonp({
 			error: error.message || JSON.parse(stringify(error))
@@ -158,7 +157,7 @@ var requestWorker = function(path, data, fn, done){
 	var req = REQUESTS[path];
 
 	if (!req){
-		winston.info('Fetching ' + path);
+		console.info('Fetching ' + path);
 
 		start = new Date();
 		var headers = {
@@ -213,7 +212,7 @@ var request = new TimeQueue(requestWorker, {
 	maxQueued: 1000
 });
 request.on('error', function(e){
-	if (e) winston.error(e);
+	if (e) console.error(e);
 });
 
 app.get(/^\/(news|news2|newest|ask|show|jobs)$/, function(req, res){
@@ -286,7 +285,7 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 					return;
 				}
 				var time = Date.now() - start;
-				if (time > 25000) winston.info('Fetch duration for #' + postID + ': ' + time + 'ms');
+				if (time > 25000) console.info('Fetch duration for #' + postID + ': ' + time + 'ms');
 				cache.set(cacheKey, data, CACHE_EXP);
 				res.jsonp(data);
 			});
