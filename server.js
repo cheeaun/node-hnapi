@@ -126,9 +126,9 @@ app.get('/', function(req, res){
 			memoryUsage: process.memoryUsage()
 		},
 		memory: {
+			size: cache._memory.size(),
+			memsize: cache._memory.memsize(),
 			keys: cache._memory.keys(),
-			hits: cache._memory.hits(),
-			misses: cache._memory.misses(),
 		},
 	}, null, 4));
 });
