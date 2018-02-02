@@ -122,7 +122,12 @@ app.get('/', function(req, res){
 		process: {
 			versions: process.versions,
 			memoryUsage: process.memoryUsage()
-		}
+		},
+		memory: {
+			keys: cache._memory.keys(),
+			hits: cache._memory.hits(),
+			misses: cache._memory.misses(),
+		},
 	}, null, 4));
 });
 
