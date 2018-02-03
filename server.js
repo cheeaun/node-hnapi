@@ -153,7 +153,7 @@ app.get(/^\/(news|news2|newest|ask|show|jobs|best)$/, function(req, res){
 		base = 'news';
 		page = 2;
 	}
-	var cacheKey = base + (page || '');
+	var cacheKey = base + (page > 1 ? page : '');
 	cache.get(cacheKey, function(err, result){
 		if (result){
 			res.jsonp(result);
