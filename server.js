@@ -43,7 +43,7 @@ const cache = Cache({
 
 const app = express();
 app.set('json spaces', 0);
-app.set('trust proxy', true);
+app.enable('trust proxy');
 
 const reqIP = function(req){
 	var ips = req.ips;
