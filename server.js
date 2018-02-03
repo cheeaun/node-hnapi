@@ -182,7 +182,6 @@ app.get(/^\/(shownew|active|noobstories)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var path = '/' + cacheKey;
-			if (cacheKey == 'news2') path = '/news?p=2';
 			request.push(path, { ip: reqIP(req) }, function(err, body){
 				if (err){
 					errorRespond(res, err);
