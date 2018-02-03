@@ -177,7 +177,6 @@ app.get(/^\/(news|news2|newest|ask|show|jobs|best)$/, function(req, res){
 
 app.get(/^\/(shownew|active|noobstories)$/, function(req, res){
 	var cacheKey = req.params[0];
-	var page = Math.min(10, Math.max(1, parseInt(req.query.page, 10) || 1));
 	cache.get(cacheKey, function(err, result){
 		if (result){
 			res.jsonp(result);
