@@ -28,10 +28,10 @@ Quick Start
 
 1. `git clone` this repo.
 2. `cd` to repo folder.
-3. Optionally download, install and start [redis](http://redis.io/download) or [memcached](http://memcached.org/).
+3. Optionally download, install and start [redis](http://redis.io/download).
 4. `yarn`
 5. `yarn start`
-6. Load `localhost` in your web browser.
+6. Load `localhost:1337` in your web browser.
 
 
 Example
@@ -49,8 +49,8 @@ HNapi uses [dotenv](https://github.com/motdotla/dotenv) for configuration.
 - `LOG_REFERER` - (default: `false`) Logs referers
 - `LOG_USERAGENT` - (default: `false`) Logs user-agent strings
 - `CACHE_MEMORY` - (default: `true`) Use in-memory caching
-- `CACHE_STORE` - (`memcached`, default: none) Specify the cache store
-- `CACHE_SERVERS` - `HOST:PORT` for memcached server
+- `CACHE_STORE` - (`redis`, default: none) Specify the cache store
+- `CACHE_SERVER` - `HOST:PORT` for Redis server
 
 License
 -------

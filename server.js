@@ -18,7 +18,7 @@ const {
 	LOG_REFERER,
 	LOG_USERAGENT,
 	CACHE_STORE,
-	CACHE_SERVERS,
+	CACHE_SERVER,
 	CACHE_MEMORY,
 	RATELIMIT_BLACKLIST,
 } = process.env;
@@ -31,7 +31,7 @@ const cache = Cache({
 	expiry: CACHE_EXP,
 	store: CACHE_STORE,
 	options: {
-		servers: CACHE_SERVERS,
+		server: CACHE_SERVER,
 		onConnect: () => {
 			console.info('Connected to cache server.');
 		},

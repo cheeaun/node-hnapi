@@ -1,6 +1,6 @@
 {
   "name": "node-hnapi",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "engines": {
     "node": ">=8.x"
   },
@@ -15,8 +15,8 @@
     "express": "~4.16.2",
     "extend": "~3.0.1",
     "he": "~1.1.1",
+    "ioredis": "~3.2.2",
     "json-stringify-safe": "~5.0.1",
-    "memcached": "~2.2.2",
     "memory-cache": "~0.2.0",
     "moment": "~2.20.1",
     "morgan": "~1.9.0",
