@@ -1,26 +1,26 @@
 {
   "name": "node-hnapi",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "engines": {
     "node": ">=8.x"
   },
   "dependencies": {
-    "@firebase/app": "~0.1.7",
-    "@firebase/database": "~0.1.8",
-    "compression": "~1.7.1",
+    "@firebase/app": "~0.3.5",
+    "@firebase/database": "~0.3.7",
+    "compression": "~1.7.3",
     "connect-ratelimit": "0.0.7",
-    "cors": "~2.8.4",
-    "domino": "~2.0.0",
-    "dotenv": "~5.0.0",
-    "express": "~4.16.2",
-    "extend": "~3.0.1",
-    "he": "~1.1.1",
-    "ioredis": "~3.2.2",
+    "cors": "~2.8.5",
+    "domino": "~2.1.1",
+    "dotenv": "~6.2.0",
+    "express": "~4.16.4",
+    "extend": "~3.0.2",
+    "he": "~1.2.0",
+    "ioredis": "~4.3.0",
     "json-stringify-safe": "~5.0.1",
     "memory-cache": "~0.2.0",
-    "moment": "~2.20.1",
-    "morgan": "~1.9.0",
+    "moment": "~2.23.0",
+    "morgan": "~1.9.1",
     "on-headers": "~1.0.1",
-    "timequeue": "~1.1.0"
+    "timequeue": "~1.1.1"
   }
 }
