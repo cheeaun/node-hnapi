@@ -80,7 +80,7 @@ if (RATELIMIT_BLACKLIST){
 }
 
 app.use(function(req, res, next){
-	res.setHeader('Cache-Control', 'public, max-age=' + CACHE_EXP);
+	res.setHeader('Cache-Control', 'public, max-age=' + CACHE_EXP + ', s-maxage=' + Math.round(CACHE_EXP/2));
 	next();
 });
 app.use(cors());
