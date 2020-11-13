@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@firebase/app": "~0.3.9",
-    "@firebase/database": "~0.3.12",
+    "@firebase/database": "~0.7.1",
     "compression": "~1.7.3",
     "connect-ratelimit": "0.0.7",
     "cors": "~2.8.5",
