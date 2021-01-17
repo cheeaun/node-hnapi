@@ -29,8 +29,8 @@ Quick Start
 1. `git clone` this repo.
 2. `cd` to repo folder.
 3. Optionally download, install and start [redis](http://redis.io/download).
-4. `yarn`
-5. `yarn start`
+4. `npm i`
+5. `npm start`
 6. Load `localhost:1337` in your web browser.
 
 
