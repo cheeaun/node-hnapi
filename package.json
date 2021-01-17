@@ -5,22 +5,22 @@
     "node": ">=10.x"
   },
   "dependencies": {
-    "@firebase/app": "~0.3.9",
-    "@firebase/database": "~0.3.12",
-    "compression": "~1.7.3",
+    "@firebase/app": "~0.6.13",
+    "@firebase/database": "~0.8.3",
+    "compression": "~1.7.4",
     "connect-ratelimit": "0.0.7",
     "cors": "~2.8.5",
-    "domino": "~2.1.2",
-    "dotenv": "~6.2.0",
-    "express": "~4.16.4",
+    "domino": "~2.1.6",
+    "dotenv": "~8.2.0",
+    "express": "~4.17.1",
     "extend": "~3.0.2",
     "he": "~1.2.0",
-    "ioredis": "~4.6.2",
+    "ioredis": "~4.19.4",
     "json-stringify-safe": "~5.0.1",
     "memory-cache": "~0.2.0",
-    "moment": "~2.24.0",
-    "morgan": "~1.9.1",
+    "moment": "~2.29.1",
+    "morgan": "~1.10.0",
     "on-headers": "~1.0.2",
-    "timequeue": "~1.2.0"
+    "timequeue": "~2.0.2"
   }
 }
