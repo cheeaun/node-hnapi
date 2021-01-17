@@ -130,7 +130,7 @@ app.get('/favicon.ico', function(req, res){
 });
 
 app.get('/robots.txt', function(req, res){
-	res.type('txt/plain');
+	res.type('text/plain');
 	res.send('User-agent: *\nDisallow: /');
 });
 
