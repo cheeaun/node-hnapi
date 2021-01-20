@@ -247,24 +247,24 @@ app.get('/newcomments', function(req, res){
 	});
 });
 
-app.get(/^\/user\/([\w\-]+)$/, function(req, res){
-	var userID = req.params[0];
-	var cacheKey = 'user' + userID;
-	cache.get(cacheKey, function(err, result){
-		if (result){
-			res.jsonp(result);
-		} else {
-			hnapi.user(userID, function(err, data){
-				if (err){
-					errorRespond(res, err);
-					return;
-				}
-				cache.set(cacheKey, data, CACHE_EXP);
-				res.jsonp(data);
-			});
-		}
-	});
-});
+// app.get(/^\/user\/([\w\-]+)$/, function(req, res){
+// 	var userID = req.params[0];
+// 	var cacheKey = 'user' + userID;
+// 	cache.get(cacheKey, function(err, result){
+// 		if (result){
+// 			res.jsonp(result);
+// 		} else {
+// 			hnapi.user(userID, function(err, data){
+// 				if (err){
+// 					errorRespond(res, err);
+// 					return;
+// 				}
+// 				cache.set(cacheKey, data, CACHE_EXP);
+// 				res.jsonp(data);
+// 			});
+// 		}
+// 	});
+// });
 
 app.listen(PORT);
 console.log('Listening to port ' + PORT);
