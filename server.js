@@ -6,6 +6,7 @@ const compress = require('compression');
 const onHeaders = require('on-headers');
 const cors = require('cors');
 const stringify = require('json-stringify-safe');
+const blocker = require('express-user-agent-blocker');
 
 const hndom = require('./lib/hndom');
 const hnapi = require('./lib/hnapi');
@@ -21,6 +22,7 @@ const {
 	CACHE_SERVER,
 	CACHE_MEMORY,
 	RATELIMIT_BLACKLIST,
+	UA_DENYLIST,
 } = process.env;
 
 // Cache
@@ -62,6 +64,11 @@ app.use(morgan(logFormat, {
 		}
 	}
 }));
+
+if (UA_DENYLIST) {
+	const denylist = UA_DENYLIST.split(' ');
+	app.use(blocker(denylist));
+}
 
 if (RATELIMIT_BLACKLIST){
 	const limiter = require('connect-ratelimit');
