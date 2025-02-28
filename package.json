@@ -16,7 +16,7 @@
     "express-user-agent-blocker": "^2.0.4",
     "extend": "~3.0.2",
     "he": "~1.2.0",
-    "ioredis": "~4.19.4",
+    "ioredis": "~4.27.8",
     "json-stringify-safe": "~5.0.1",
     "memory-cache": "~0.2.0",
     "moment": "~2.29.1",
