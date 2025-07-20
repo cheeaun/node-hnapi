@@ -7,7 +7,7 @@
   "dependencies": {
     "@firebase/app": "~0.6.13",
     "@firebase/database": "~0.8.3",
-    "compression": "~1.7.4",
+    "compression": "~1.8.1",
     "connect-ratelimit": "0.0.7",
     "cors": "~2.8.5",
     "domino": "~2.1.6",
@@ -20,8 +20,8 @@
     "json-stringify-safe": "~5.0.1",
     "memory-cache": "~0.2.0",
     "moment": "~2.29.1",
-    "morgan": "~1.10.0",
-    "on-headers": "~1.0.2",
+    "morgan": "~1.10.1",
+    "on-headers": "~1.1.0",
     "timequeue": "~2.0.2"
   }
 }
