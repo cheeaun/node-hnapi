@@ -50,6 +50,7 @@ HNapi uses [dotenv](https://github.com/motdotla/dotenv) for configuration.
 - `CACHE_MEMORY` - (default: `true`) Use in-memory caching
 - `CACHE_STORE` - (`redis`, default: none) Specify the cache store
 - `CACHE_SERVER` - `HOST:PORT` for Redis server
+- `COMMENT_TIMEOUT` - (default: `5000`) Milliseconds to wait for each comment from Firebase. Items with comments that miss it are served without them and aren't cached.
 
 License
 -------

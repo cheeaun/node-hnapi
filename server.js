@@ -215,14 +215,22 @@ app.get(/^\/item\/(\d+)$/, function(req, res){
 			res.jsonp(result);
 		} else {
 			var start = Date.now();
-			hnapi.item(postID, function(err, data){
+			hnapi.item(postID, function(err, data, incomplete){
 				if (err){
 					errorRespond(res, err);
 					return;
 				}
 				var time = Date.now() - start;
 				if (time > 25000) console.info('Fetch duration for #' + postID + ': ' + time + 'ms');
-				cache.set(cacheKey, data, CACHE_EXP);
+				if (incomplete){
+					// Some comments didn't load in time. Don't let this partial
+					// thread stick around in our cache or a CDN's; the next
+					// request gets another go at it.
+					console.info('Incomplete comments for #' + postID + ', not caching');
+					res.setHeader('Cache-Control', 'no-store');
+				} else {
+					cache.set(cacheKey, data, CACHE_EXP);
+				}
 				res.jsonp(data);
 			});
 		}
